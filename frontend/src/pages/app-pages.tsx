@@ -101,17 +101,12 @@ export function DashboardPage() {
     }));
   }, [todayEvents]);
 
-  const showSkeleton = useDelayedLoading(loading);
-
   if (error) {
     return <ErrorPanel title="Không thể tải dashboard" description={error} onRetry={() => window.location.reload()} />;
   }
 
   return (
     <>
-      {showSkeleton ? (
-        <DashboardSkeleton />
-      ) : (
       <div className="space-y-6">
         <Card className="overflow-hidden border-brand-100 bg-[linear-gradient(135deg,rgba(15,23,42,0.98)_0%,rgba(30,41,59,0.94)_45%,rgba(14,165,233,0.84)_100%)] text-white shadow-2xl">
           <CardBody className="relative overflow-hidden">
@@ -353,7 +348,6 @@ export function DashboardPage() {
         {/* ✨ Feature: Smart Deadline Alert (D-7, D-3, D-1) */}
         <SmartDeadlineAlertPanel deadlines={deadlines} />
       </div>
-      )}
 
       {/* 🌐 Global inline create modal */}
       <EventFormModal
@@ -639,13 +633,8 @@ export function CalendarPage() {
     await reloadCalendar();
   };
 
-  const showCalSkeleton = useDelayedLoading(loading);
-
   return (
     <>
-      {showCalSkeleton ? (
-        <CalendarSkeleton />
-      ) : (
       <div className="space-y-6">
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-3">
@@ -747,7 +736,6 @@ export function CalendarPage() {
           allEvents={[...monthEvents, ...weekEvents]}
         />
       </div>
-      )}
     </>
   );
 }
