@@ -12,6 +12,7 @@ import { getEventId } from '@/utils/event-id';
 import type { EventItem } from '@/types/event';
 import { useTheme } from '@/context/theme-context';
 import { useLang } from '@/context/lang-context';
+import { useToast } from '@/context/toast-context';
 
 const iconMap = {
   LayoutDashboard,
@@ -157,6 +158,7 @@ function NotificationBell() {
   });
   const [showSettings, setShowSettings] = useState(false);
   const { t, lang } = useLang();
+  const { pushToast } = useToast();
 
   useEffect(() => {
     let mounted = true;
@@ -185,8 +187,12 @@ function NotificationBell() {
 
           localStorage.setItem(storageKey, JSON.stringify(Array.from(nextSeen).slice(-200)));
         }
-      } catch {
-        // silent
+      } catch (error) {
+        pushToast({
+          title: lang === 'ja' ? '通知を読み込めません' : 'Không thể tải thông báo',
+          description: error instanceof Error ? error.message : (lang === 'ja' ? 'もう一度お試しください' : 'Vui lòng thử lại'),
+          variant: 'error',
+        });
       }
     };
 
@@ -196,14 +202,37 @@ function NotificationBell() {
       mounted = false;
       window.clearInterval(timer);
     };
-  }, [notifyMinutes]);
+  }, [lang, notifyMinutes, pushToast]);
 
   const requestPermission = async () => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
-    if (Notification.permission === 'default') {
-      await Notification.requestPermission();
-    }
     setOpen((current) => !current);
+
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      pushToast({
+        title: lang === 'ja' ? 'ブラウザ通知は未対応です' : 'Trình duyệt không hỗ trợ thông báo',
+        variant: 'warning',
+      });
+      return;
+    }
+
+    if (Notification.permission === 'default') {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        pushToast({
+          title: lang === 'ja' ? '通知を有効にしました' : 'Đã bật thông báo',
+          description: lang === 'ja' ? '予定が近づくと通知します。' : 'Bạn sẽ được nhắc khi sự kiện sắp diễn ra.',
+          variant: 'success',
+        });
+      }
+    }
+
+    if (Notification.permission === 'denied') {
+      pushToast({
+        title: lang === 'ja' ? '通知がブロックされています' : 'Thông báo đang bị chặn',
+        description: lang === 'ja' ? 'ブラウザ設定でこのサイトの通知を許可してください。' : 'Hãy bật quyền thông báo cho trang này trong cài đặt trình duyệt.',
+        variant: 'warning',
+      });
+    }
   };
 
   const handleSetMinutes = (mins: number) => {

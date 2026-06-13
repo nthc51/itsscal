@@ -1,8 +1,8 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, XCircle, Info } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, XCircle, Info } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-type ToastVariant = 'success' | 'error' | 'info';
+type ToastVariant = 'success' | 'error' | 'info' | 'warning';
 
 export interface ToastInput {
   title: string;
@@ -24,6 +24,7 @@ const iconMap = {
   success: CheckCircle2,
   error: XCircle,
   info: Info,
+  warning: AlertTriangle,
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -60,11 +61,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 'animate-fadeInUp rounded-2xl border bg-slate-950/90 p-4 text-white shadow-2xl backdrop-blur',
                 toast.variant === 'success' && 'border-emerald-500/40',
                 toast.variant === 'error' && 'border-rose-500/40',
-                toast.variant === 'info' && 'border-sky-500/40'
+                toast.variant === 'info' && 'border-sky-500/40',
+                toast.variant === 'warning' && 'border-amber-500/40'
               )}
             >
               <div className="flex items-start gap-3">
-                <div className={cn('mt-0.5 rounded-xl p-2', toast.variant === 'success' && 'bg-emerald-500/15 text-emerald-300', toast.variant === 'error' && 'bg-rose-500/15 text-rose-300', toast.variant === 'info' && 'bg-sky-500/15 text-sky-300')}>
+                <div className={cn('mt-0.5 rounded-xl p-2', toast.variant === 'success' && 'bg-emerald-500/15 text-emerald-300', toast.variant === 'error' && 'bg-rose-500/15 text-rose-300', toast.variant === 'info' && 'bg-sky-500/15 text-sky-300', toast.variant === 'warning' && 'bg-amber-500/15 text-amber-300')}>
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">

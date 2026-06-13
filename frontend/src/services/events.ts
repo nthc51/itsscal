@@ -24,12 +24,30 @@ export async function getUpcomingDeadlines() {
 
 export async function getUpcomingNotifications(minutes = 30) {
   if (IS_MOCK) return mockApi.getUpcomingNotifications(minutes);
-  const response = await request<EventItem[]>({
-    url: '/event/notifications',
-    method: 'GET',
-    params: { minutes },
-  });
-  return response.data;
+  const response = await request<EventItem[]>({ url: '/event', method: 'GET' });
+  const now = new Date();
+  const horizon = new Date(now.getTime() + minutes * 60 * 1000);
+
+  const parseLocalDateTime = (date: string, time: string) => {
+    const normalizedTime = (time || '00:00').slice(0, 5);
+    return new Date(`${date}T${normalizedTime}:00`);
+  };
+
+  return response.data
+    .filter((event) => !event.is_completed && event.type !== 'holiday')
+    .filter((event) => {
+      const reference =
+        event.type === 'deadline'
+          ? parseLocalDateTime(event.event_date, event.end_time)
+          : parseLocalDateTime(event.event_date, event.start_time);
+
+      return reference >= now && reference <= horizon;
+    })
+    .sort((a, b) => {
+      const aRef = parseLocalDateTime(a.event_date, a.type === 'deadline' ? a.end_time : a.start_time);
+      const bRef = parseLocalDateTime(b.event_date, b.type === 'deadline' ? b.end_time : b.start_time);
+      return aRef.getTime() - bRef.getTime();
+    });
 }
 
 export async function getMonthEvents({ year, month }: MonthParams) {
