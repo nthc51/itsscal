@@ -34,11 +34,25 @@ function getRealtimeStatus(event: EventItem): 'ongoing' | 'passed' | 'upcoming' 
   return 'upcoming';
 }
 
+let dashboardCache: {
+  events: EventItem[];
+  todayEvents: EventItem[];
+  deadlines: EventItem[];
+} | null = null;
+
+const calendarCache = new Map<string, { monthEvents: EventItem[]; weekEvents: EventItem[] }>();
+
+function getCalendarCacheKey(cursor: Date, weekCursor: Date) {
+  const weekStart = format(buildWeekStart(weekCursor), 'yyyy-MM-dd');
+  const weekEnd = format(buildWeekEnd(weekCursor), 'yyyy-MM-dd');
+  return `${cursor.getFullYear()}-${cursor.getMonth() + 1}-${weekStart}-${weekEnd}`;
+}
+
 export function DashboardPage() {
-  const [events, setEvents] = useState<EventItem[]>([]);
-  const [todayEvents, setTodayEvents] = useState<EventItem[]>([]);
-  const [deadlines, setDeadlines] = useState<EventItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [events, setEvents] = useState<EventItem[]>(() => dashboardCache?.events ?? []);
+  const [todayEvents, setTodayEvents] = useState<EventItem[]>(() => dashboardCache?.todayEvents ?? []);
+  const [deadlines, setDeadlines] = useState<EventItem[]>(() => dashboardCache?.deadlines ?? []);
+  const [loading, setLoading] = useState(!dashboardCache);
   const [error, setError] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const navigate = useNavigate();
@@ -48,8 +62,9 @@ export function DashboardPage() {
 
   const loadData = async () => {
     try {
-      setLoading(true);
+      setLoading(!dashboardCache);
       const [all, today, upcoming] = await Promise.all([getAllEvents(), getTodayEvents(), getUpcomingDeadlines()]);
+      dashboardCache = { events: all, todayEvents: today, deadlines: upcoming };
       setEvents(all);
       setTodayEvents(today);
       setDeadlines(upcoming);
@@ -518,10 +533,11 @@ export function EventsPage() {
 
 export function CalendarPage() {
   const [cursor, setCursor] = useState(new Date());
-  const [monthEvents, setMonthEvents] = useState<EventItem[]>([]);
-  const [weekEvents, setWeekEvents] = useState<EventItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [weekCursor, setWeekCursor] = useState(new Date());
+  const cachedCalendar = calendarCache.get(getCalendarCacheKey(cursor, weekCursor));
+  const [monthEvents, setMonthEvents] = useState<EventItem[]>(() => cachedCalendar?.monthEvents ?? []);
+  const [weekEvents, setWeekEvents] = useState<EventItem[]>(() => cachedCalendar?.weekEvents ?? []);
+  const [loading, setLoading] = useState(!cachedCalendar);
   const [typeFilter, setTypeFilter] = useState<'all' | 'hoc' | 'deadline' | 'lam_them'>('all');
   const [dayEventsModalOpen, setDayEventsModalOpen] = useState(false);
   const [selectedDayEvents, setSelectedDayEvents] = useState<EventItem[]>([]);
@@ -536,12 +552,13 @@ export function CalendarPage() {
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
+        setLoading(!calendarCache.get(getCalendarCacheKey(cursor, weekCursor)));
         const year = cursor.getFullYear();
         const month = cursor.getMonth() + 1;
         const weekStart = format(buildWeekStart(weekCursor), 'yyyy-MM-dd');
         const weekEnd = format(buildWeekEnd(weekCursor), 'yyyy-MM-dd');
         const [monthData, weekData] = await Promise.all([getMonthEvents({ year, month }), getWeekEvents(weekStart, weekEnd)]);
+        calendarCache.set(getCalendarCacheKey(cursor, weekCursor), { monthEvents: monthData, weekEvents: weekData });
         setMonthEvents(monthData);
         setWeekEvents(weekData);
       } catch (err) {
@@ -572,13 +589,16 @@ export function CalendarPage() {
   }, [typeFilter, monthEvents]);
 
   const reloadCalendar = async () => {
+    const cacheKey = getCalendarCacheKey(cursor, weekCursor);
+    const cached = calendarCache.get(cacheKey);
     try {
-      setLoading(true);
+      setLoading(!cached);
       const year = cursor.getFullYear();
       const month = cursor.getMonth() + 1;
       const weekStart = format(buildWeekStart(weekCursor), 'yyyy-MM-dd');
       const weekEnd = format(buildWeekEnd(weekCursor), 'yyyy-MM-dd');
       const [monthData, weekData] = await Promise.all([getMonthEvents({ year, month }), getWeekEvents(weekStart, weekEnd)]);
+      calendarCache.set(cacheKey, { monthEvents: monthData, weekEvents: weekData });
       setMonthEvents(monthData);
       setWeekEvents(weekData);
     } catch (err) {
