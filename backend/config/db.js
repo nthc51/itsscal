@@ -1,12 +1,18 @@
 const { Sequelize } = require('sequelize');
 
+const database = process.env.MYSQL_DATABASE || process.env.MYSQLDATABASE || 'calendar';
+const username = process.env.MYSQL_USER || process.env.MYSQLUSER || 'root';
+const password = process.env.MYSQL_PASSWORD || process.env.MYSQLPASSWORD || '';
+const host = process.env.MYSQL_HOST || process.env.MYSQLHOST || 'localhost';
+const port = Number(process.env.MYSQL_PORT || process.env.MYSQLPORT || 3306);
+
 const sequelize = new Sequelize(
-  process.env.MYSQL_DATABASE || 'calendar',
-  process.env.MYSQL_USER || 'root',
-  process.env.MYSQL_PASSWORD || '',
+  database,
+  username,
+  password,
   {
-    host: process.env.MYSQL_HOST || 'localhost',
-    port: process.env.MYSQL_PORT ? Number(process.env.MYSQL_PORT) : 3306,
+    host,
+    port,
     dialect: 'mysql',
     logging: false,
   }
@@ -14,6 +20,7 @@ const sequelize = new Sequelize(
 
 const connectDB = async () => {
   try {
+    console.log(`Connecting to MySQL at ${host}:${port}/${database} as ${username}`);
     await sequelize.authenticate();
     // Ensure models are registered and tables exist
     // Require models so they register with sequelize
