@@ -1,10 +1,37 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
 import { AuthProvider, useAuth } from '@/context/auth-context';
-import { ToastProvider } from '@/context/toast-context';
+import { ToastProvider, useToast } from '@/context/toast-context';
 import { ThemeProvider } from '@/context/theme-context';
 import { LangProvider } from '@/context/lang-context';
 import { AuthPage } from '@/pages/auth';
 import { CalendarPage, DashboardPage, EventDetailPage, EventsPage, NotFoundPage, ProfilePage } from '@/pages/app-pages';
+import { AppShell } from '@/components/layout';
+import { EventFormModal } from '@/components/event-form-modal';
+import { createEvent } from '@/services/events';
+
+function AppLayout() {
+  const [formOpen, setFormOpen] = useState(false);
+  const { pushToast } = useToast();
+
+  return (
+    <AppShell onCreateEvent={() => setFormOpen(true)}>
+      <Outlet />
+      <EventFormModal
+        open={formOpen}
+        mode="create"
+        initialValue={null}
+        onClose={() => setFormOpen(false)}
+        onSubmit={async (payload) => {
+          await createEvent(payload);
+          pushToast({ title: 'Tạo sự kiện thành công', description: payload.title, variant: 'success' });
+          setFormOpen(false);
+          window.dispatchEvent(new Event('calendar:event-created'));
+        }}
+      />
+    </AppShell>
+  );
+}
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isBootstrapping } = useAuth();
@@ -36,42 +63,16 @@ export default function App() {
                   path="/app"
                   element={
                     <ProtectedRoute>
-                      <DashboardPage />
+                      <AppLayout />
                     </ProtectedRoute>
                   }
-                />
-                <Route
-                  path="/app/calendar"
-                  element={
-                    <ProtectedRoute>
-                      <CalendarPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/app/events"
-                  element={
-                    <ProtectedRoute>
-                      <EventsPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/app/events/:id"
-                  element={
-                    <ProtectedRoute>
-                      <EventDetailPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/app/profile"
-                  element={
-                    <ProtectedRoute>
-                      <ProfilePage />
-                    </ProtectedRoute>
-                  }
-                />
+                >
+                  <Route index element={<DashboardPage />} />
+                  <Route path="calendar" element={<CalendarPage />} />
+                  <Route path="events" element={<EventsPage />} />
+                  <Route path="events/:id" element={<EventDetailPage />} />
+                  <Route path="profile" element={<ProfilePage />} />
+                </Route>
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </ToastProvider>

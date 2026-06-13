@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, useCallback, memo, type ReactNode } from 
 import { useNavigate, useParams } from 'react-router-dom';
 import { format, isToday as dateFnsIsToday, isPast, isFuture, parseISO } from 'date-fns';
 import { AlertCircle, Calendar, CheckCircle2, Clock3, Sparkles, Plus } from 'lucide-react';
-import { AppShell } from '@/components/layout';
 import { MonthCalendar, WeekAgenda } from '@/components/calendar-view';
 import { DayEventsModal } from '@/components/day-events-modal';
 import { EventFormModal } from '@/components/event-form-modal';
@@ -94,7 +93,7 @@ export function DashboardPage() {
   }
 
   return (
-    <AppShell onCreateEvent={() => setFormOpen(true)}>
+    <>
       {showSkeleton ? (
         <DashboardSkeleton />
       ) : (
@@ -354,7 +353,7 @@ export function DashboardPage() {
         }}
         allEvents={events}
       />
-    </AppShell>
+    </>
   );
 }
 
@@ -490,7 +489,7 @@ export function EventsPage() {
   const showEventsSkeleton = useDelayedLoading(loading);
 
   return (
-    <AppShell onCreateEvent={() => setFormOpen(true)}>
+    <>
       <div className="space-y-6">
         <EventToolbar
           search={search}
@@ -513,7 +512,7 @@ export function EventsPage() {
         }}
         onSubmit={handleSubmit}
       />
-    </AppShell>
+    </>
   );
 }
 
@@ -623,7 +622,7 @@ export function CalendarPage() {
   const showCalSkeleton = useDelayedLoading(loading);
 
   return (
-    <AppShell onCreateEvent={() => setFormOpen(true)}>
+    <>
       {showCalSkeleton ? (
         <CalendarSkeleton />
       ) : (
@@ -729,7 +728,7 @@ export function CalendarPage() {
         />
       </div>
       )}
-    </AppShell>
+    </>
   );
 }
 
@@ -785,7 +784,7 @@ export function EventDetailPage() {
   };
 
   return (
-    <AppShell onCreateEvent={() => setFormOpen(true)}>
+    <>
       {loading || !event ? <DetailSkeleton /> : (
         <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <Card>
@@ -893,7 +892,7 @@ export function EventDetailPage() {
           setFormOpen(false);
         }}
       />
-    </AppShell>
+    </>
   );
 }
 
@@ -948,7 +947,7 @@ export function ProfilePage() {
   };
 
   return (
-    <AppShell onCreateEvent={() => setProfileFormOpen(true)}>
+    <>
       <PageShell
         title={lang === 'ja' ? 'プロフィール' : 'Hồ sơ cá nhân'}
         description={lang === 'ja' ? 'アカウント情報の更新とパスワード変更はこちらで行えます。' : 'Cập nhật thông tin tài khoản và thay đổi mật khẩu tại đây.'}
@@ -1025,7 +1024,7 @@ export function ProfilePage() {
           setProfileFormOpen(false);
         }}
       />
-    </AppShell>
+    </>
   );
 }
 
