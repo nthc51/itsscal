@@ -160,6 +160,14 @@ function NotificationBell() {
   const { t, lang } = useLang();
   const { pushToast } = useToast();
 
+  const getNotificationPhase = (event: EventItem) => {
+    const start = new Date(`${event.event_date}T${event.start_time.slice(0, 5)}:00`);
+    const end = new Date(`${event.event_date}T${event.end_time.slice(0, 5)}:00`);
+    const now = new Date();
+
+    return start <= now && end >= now ? 'ongoing' : 'upcoming';
+  };
+
   useEffect(() => {
     let mounted = true;
     const storageKey = 'calendar_pro_notified_ids';
@@ -175,8 +183,18 @@ function NotificationBell() {
           const nextSeen = new Set(seen);
 
           data.forEach((event) => {
-            const id = getEventId(event);
+            const phase = getNotificationPhase(event);
+            const id = `${getEventId(event)}:${phase}`;
             if (nextSeen.has(id)) return;
+
+            if (phase === 'ongoing') {
+              const timeLabel = format(new Date(event.event_date), 'dd/MM/yyyy') + ' - ' + formatTimeRange(event.start_time, event.end_time);
+              new Notification(lang === 'ja' ? 'イベントが進行中です' : 'Sự kiện đang diễn ra', {
+                body: `${event.title} - ${timeLabel}`,
+              });
+              nextSeen.add(id);
+              return;
+            }
 
             const timeLabel = format(new Date(event.event_date), 'dd/MM/yyyy') + ' • ' + formatTimeRange(event.start_time, event.end_time);
             new Notification('Sự kiện sắp diễn ra', {
