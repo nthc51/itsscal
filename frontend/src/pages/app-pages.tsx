@@ -89,17 +89,16 @@ export function DashboardPage() {
 
   const showSkeleton = useDelayedLoading(loading);
 
-  if (showSkeleton) {
-    return <DashboardSkeleton />;
-  }
-
   if (error) {
     return <ErrorPanel title="Không thể tải dashboard" description={error} onRetry={() => window.location.reload()} />;
   }
 
   return (
     <AppShell onCreateEvent={() => setFormOpen(true)}>
-      <div className="space-y-6 animate-page-enter">
+      {showSkeleton ? (
+        <DashboardSkeleton />
+      ) : (
+      <div className="space-y-6">
         <Card className="overflow-hidden border-brand-100 bg-[linear-gradient(135deg,rgba(15,23,42,0.98)_0%,rgba(30,41,59,0.94)_45%,rgba(14,165,233,0.84)_100%)] text-white shadow-2xl">
           <CardBody className="relative overflow-hidden">
             <div className="pointer-events-none absolute inset-0 opacity-20">
@@ -340,6 +339,7 @@ export function DashboardPage() {
         {/* ✨ Feature: Smart Deadline Alert (D-7, D-3, D-1) */}
         <SmartDeadlineAlertPanel deadlines={deadlines} />
       </div>
+      )}
 
       {/* 🌐 Global inline create modal */}
       <EventFormModal
@@ -491,7 +491,7 @@ export function EventsPage() {
 
   return (
     <AppShell onCreateEvent={() => setFormOpen(true)}>
-      <div className="space-y-6 animate-page-enter">
+      <div className="space-y-6">
         <EventToolbar
           search={search}
           setSearch={setSearch}
@@ -622,13 +622,12 @@ export function CalendarPage() {
 
   const showCalSkeleton = useDelayedLoading(loading);
 
-  if (showCalSkeleton) {
-    return <CalendarSkeleton />;
-  }
-
   return (
     <AppShell onCreateEvent={() => setFormOpen(true)}>
-      <div className="space-y-6 animate-page-enter">
+      {showCalSkeleton ? (
+        <CalendarSkeleton />
+      ) : (
+      <div className="space-y-6">
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-3">
           <Button variant={typeFilter === 'all' ? 'primary' : 'secondary'} onClick={() => setTypeFilter('all')} className="flex items-center gap-2">
@@ -729,6 +728,7 @@ export function CalendarPage() {
           allEvents={[...monthEvents, ...weekEvents]}
         />
       </div>
+      )}
     </AppShell>
   );
 }
@@ -787,7 +787,7 @@ export function EventDetailPage() {
   return (
     <AppShell onCreateEvent={() => setFormOpen(true)}>
       {loading || !event ? <DetailSkeleton /> : (
-        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] animate-page-enter">
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <Card>
             <CardBody className="space-y-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
