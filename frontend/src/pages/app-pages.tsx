@@ -1067,26 +1067,8 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function DashboardSkeleton() {
-  return (
-    <div className="space-y-6 p-4 sm:p-6 lg:p-8">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} className="h-32 rounded-3xl" />)}
-      </div>
-      <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
-        <Skeleton className="h-[520px] rounded-3xl" />
-        <Skeleton className="h-[520px] rounded-3xl" />
-      </div>
-    </div>
-  );
-}
-
 function EventsSkeleton() {
   return <Skeleton className="h-[560px] rounded-3xl" />;
-}
-
-function CalendarSkeleton() {
-  return <Skeleton className="h-[720px] rounded-3xl" />;
 }
 
 function DetailSkeleton() {
