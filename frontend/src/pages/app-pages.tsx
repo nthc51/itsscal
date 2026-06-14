@@ -1176,7 +1176,6 @@ function WeeklySummaryPanel({ events }: { events: EventItem[] }) {
       <CardBody>
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">✨ {lang === 'ja' ? '新機能' : 'Feature mới'}</p>
             <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? '今週のまとめ' : 'Tổng kết tuần này'}</h2>
           </div>
           <span className="rounded-2xl bg-brand-50 dark:bg-brand-900/30 px-3 py-1.5 text-sm font-semibold text-brand-700 dark:text-brand-400">AI Weekly Summary</span>
@@ -1258,7 +1257,6 @@ function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
       <CardBody>
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">✨ {lang === 'ja' ? '新機能' : 'Feature mới'}</p>
             <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">Smart Deadline Alert</h2>
           </div>
           <span className="rounded-2xl bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 text-sm font-semibold text-rose-700 dark:text-rose-400">
