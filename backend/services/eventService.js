@@ -49,6 +49,12 @@ const normalizeEvent = (event) => {
 
 const normalizeEvents = (events) => events.map(normalizeEvent);
 
+const parseVietnamDateTime = (date, time) => {
+  const [year, month, day] = String(date).slice(0, 10).split('-').map(Number);
+  const [hour = 0, minute = 0, second = 0] = String(time || '00:00:00').split(':').map(Number);
+  return new Date(Date.UTC(year, month - 1, day, hour - 7, minute, second));
+};
+
 const throwIfConflict = (conflicts) => {
   if (conflicts.length > 0) {
     const names = conflicts
@@ -203,16 +209,17 @@ const getUpcomingNotifications = async (user_id, minutes = 30) => {
   const horizon = new Date(now.getTime() + Number(minutes) * 60 * 1000);
 
   const allEvents = await Event.findAll({
-    where: { user_id },
+    where: { user_id, is_completed: false, type: { [Op.ne]: 'holiday' } },
     order: [['event_date', 'ASC'], ['start_time', 'ASC']],
   });
 
   return normalizeEvents(allEvents.filter((event) => {
-    const reference = event.type === 'deadline' && event.deadline_due_datetime
-      ? new Date(event.deadline_due_datetime)
-      : new Date(`${event.event_date}T${event.start_time}`);
+    const start = parseVietnamDateTime(event.event_date, event.start_time);
+    const end = parseVietnamDateTime(event.event_date, event.end_time);
+    const reference = event.type === 'deadline' ? end : start;
+    const isOngoing = start <= now && end >= now;
 
-    return reference >= now && reference <= horizon;
+    return isOngoing || (start > now && reference >= now && reference <= horizon);
   }));
 };
 
