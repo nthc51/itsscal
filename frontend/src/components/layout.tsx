@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Bell, CalendarRange, Clock3, LayoutDashboard, ListTodo, LogOut, Menu, Moon, Plus, Sun, UserCircle2, X } from 'lucide-react';
+import { Bell, CalendarRange, Clock3, LayoutDashboard, ListTodo, LogOut, Menu, Plus, UserCircle2, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/utils/cn';
 import { NAV_ITEMS } from '@/utils/constants';
@@ -10,7 +10,6 @@ import { getUpcomingNotifications } from '@/services/events';
 import { formatTimeRange } from '@/utils/date';
 import { getEventId } from '@/utils/event-id';
 import type { EventItem } from '@/types/event';
-import { useTheme } from '@/context/theme-context';
 import { useLang } from '@/context/lang-context';
 import { useToast } from '@/context/toast-context';
 
@@ -24,7 +23,6 @@ const iconMap = {
 export function AppShell({ children, onCreateEvent }: { children: React.ReactNode; onCreateEvent: () => void }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { t, lang, setLang } = useLang();
   const location = useLocation();
 
@@ -71,14 +69,6 @@ export function AppShell({ children, onCreateEvent }: { children: React.ReactNod
                 title={t('language')}
               >
                 {lang === 'vi' ? 'JP' : 'VI'}
-              </button>
-              <button
-                type="button"
-                onClick={toggleTheme}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-slate-100 hover:shadow-sm transition"
-                title={theme === 'dark' ? t('lightMode') : t('darkMode')}
-              >
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>
               <div className="flex h-8 w-8 items-center justify-center">
                 <NotificationBell />
