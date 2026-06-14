@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
 import { Clock, MapPin, X } from 'lucide-react';
 import { useMemo } from 'react';
 import type { EventItem } from '@/types/event';
@@ -33,7 +34,9 @@ export function DayEventsModal({ open, date, events, onClose, onEventClick }: Da
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur px-6 py-5 sm:rounded-t-3xl">
           <div>
-            <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-50">{format(date, 'EEEE')}</h2>
+            <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-50">
+              {format(date, 'EEEE', lang === 'ja' ? { locale: ja } : undefined)}
+            </h2>
             <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{format(date, 'dd/MM/yyyy')}</p>
           </div>
           <button
@@ -73,7 +76,7 @@ export function DayEventsModal({ open, date, events, onClose, onEventClick }: Da
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-50 truncate">{event.title}</h3>
                         <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>
-                          {getTypeLabel(event.type)}
+                          {getTypeLabel(event.type, lang)}
                         </Badge>
                         {event.is_completed && (
                           <Badge tone="success">{lang === 'ja' ? '完了' : 'Hoàn thành'}</Badge>
@@ -108,7 +111,7 @@ export function DayEventsModal({ open, date, events, onClose, onEventClick }: Da
                         <div className="mt-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/40 p-3">
                           <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Priority</p>
                           <div className="mt-2">
-                            <Badge tone={getPriorityTone(event.deadline.priority)}>{getPriorityLabel(event.deadline.priority)}</Badge>
+                            <Badge tone={getPriorityTone(event.deadline.priority)}>{getPriorityLabel(event.deadline.priority, lang)}</Badge>
                           </div>
                         </div>
                       )}

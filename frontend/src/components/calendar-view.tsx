@@ -1,4 +1,5 @@
 import { format, isSameDay } from 'date-fns';
+import { ja } from 'date-fns/locale';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { EventItem } from '@/types/event';
 import { buildMonthGrid, buildWeekRange, formatTimeRange, getMonthCursor, getTypeLabel, isAllDayEvent } from '@/utils/date';
@@ -35,7 +36,9 @@ export function MonthCalendar({
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
               {lang === 'ja' ? '月間カレンダー' : 'Lịch tháng'}
             </p>
-            <h3 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{format(cursor, 'MMMM yyyy')}</h3>
+            <h3 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">
+              {lang === 'ja' ? format(cursor, 'yyyy年M月', { locale: ja }) : format(cursor, 'MMMM yyyy')}
+            </h3>
           </div>
           <div className="flex items-center gap-2">
             <IconButton onClick={() => setCursor(getMonthCursor(cursor, 'prev'))}>
@@ -226,11 +229,11 @@ export function WeekAgenda({
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-slate-950 dark:text-slate-50 truncate">{event.title}</p>
                     <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      {format(new Date(event.event_date), 'EEE dd/MM')} • {formatTimeRange(event.start_time, event.end_time)}
+                      {format(new Date(event.event_date), 'EEE dd/MM', lang === 'ja' ? { locale: ja } : undefined)} • {formatTimeRange(event.start_time, event.end_time)}
                     </p>
                   </div>
                   <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>
-                    {getTypeLabel(event.type)}
+                    {getTypeLabel(event.type, lang)}
                   </Badge>
                 </div>
               </button>

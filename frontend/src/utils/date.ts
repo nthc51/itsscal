@@ -14,14 +14,17 @@ import {
   isToday,
   isWithinInterval,
 } from 'date-fns';
+import { ja, vi } from 'date-fns/locale';
 import type { EventItem } from '@/types/event';
 
-export function formatDateLabel(input: string | Date) {
-  return format(typeof input === 'string' ? parseISO(input) : input, 'dd MMM yyyy');
+type Lang = 'vi' | 'ja';
+
+export function formatDateLabel(input: string | Date, lang: Lang = 'vi') {
+  return format(typeof input === 'string' ? parseISO(input) : input, 'dd MMM yyyy', { locale: lang === 'ja' ? ja : vi });
 }
 
-export function formatDateShort(input: string | Date) {
-  return format(typeof input === 'string' ? parseISO(input) : input, 'EEE, dd/MM');
+export function formatDateShort(input: string | Date, lang: Lang = 'vi') {
+  return format(typeof input === 'string' ? parseISO(input) : input, 'EEE, dd/MM', { locale: lang === 'ja' ? ja : vi });
 }
 
 export function formatTimeRange(startTime: string, endTime: string) {
@@ -70,7 +73,22 @@ export function isSameCalendarDay(a: Date, b: Date) {
   return isSameDay(a, b);
 }
 
-export function getTypeLabel(type: EventItem['type']) {
+export function getTypeLabel(type: EventItem['type'], lang: Lang = 'vi') {
+  if (lang === 'ja') {
+    switch (type) {
+      case 'hoc':
+        return '学習';
+      case 'deadline':
+        return '締め切り';
+      case 'lam_them':
+        return 'アルバイト';
+      case 'holiday':
+        return '祝日';
+      default:
+        return type;
+    }
+  }
+
   switch (type) {
     case 'hoc':
       return 'Học tập';
@@ -85,7 +103,20 @@ export function getTypeLabel(type: EventItem['type']) {
   }
 }
 
-export function getPriorityLabel(priority?: string | null) {
+export function getPriorityLabel(priority?: string | null, lang: Lang = 'vi') {
+  if (lang === 'ja') {
+    switch (priority) {
+      case 'high':
+        return '高';
+      case 'medium':
+        return '中';
+      case 'low':
+        return '低';
+      default:
+        return '—';
+    }
+  }
+
   switch (priority) {
     case 'high':
       return 'Cao';
@@ -111,7 +142,20 @@ export function getPriorityTone(priority?: string | null) {
   }
 }
 
-export function getRecurrenceLabel(frequency?: string | null, interval = 1) {
+export function getRecurrenceLabel(frequency?: string | null, interval = 1, lang: Lang = 'vi') {
+  if (lang === 'ja') {
+    switch (frequency) {
+      case 'daily':
+        return interval > 1 ? `${interval}日ごと` : '毎日';
+      case 'weekly':
+        return interval > 1 ? `${interval}週間ごと` : '毎週';
+      case 'monthly':
+        return interval > 1 ? `${interval}か月ごと` : '毎月';
+      default:
+        return '—';
+    }
+  }
+
   switch (frequency) {
     case 'daily':
       return interval > 1 ? `Mỗi ${interval} ngày` : 'Hằng ngày';
@@ -124,20 +168,20 @@ export function getRecurrenceLabel(frequency?: string | null, interval = 1) {
   }
 }
 
-export function getDeadlineCountdownLabel(dueDatetime?: string | null, now = new Date()) {
+export function getDeadlineCountdownLabel(dueDatetime?: string | null, now = new Date(), lang: Lang = 'vi') {
   if (!dueDatetime) return '—';
 
   const target = typeof dueDatetime === 'string' ? parseISO(dueDatetime) : dueDatetime;
   const diffMinutes = differenceInMinutes(target, now);
 
-  if (diffMinutes <= 0) return 'Đã quá hạn';
-  if (diffMinutes < 60) return `Còn ${diffMinutes} phút`;
+  if (diffMinutes <= 0) return lang === 'ja' ? '期限切れ' : 'Đã quá hạn';
+  if (diffMinutes < 60) return lang === 'ja' ? `あと${diffMinutes}分` : `Còn ${diffMinutes} phút`;
 
   const diffHours = Math.ceil(diffMinutes / 60);
-  if (diffHours < 24) return `Còn ${diffHours} giờ`;
+  if (diffHours < 24) return lang === 'ja' ? `あと${diffHours}時間` : `Còn ${diffHours} giờ`;
 
   const diffDays = Math.ceil(diffHours / 24);
-  return `Còn ${diffDays} ngày`;
+  return lang === 'ja' ? `あと${diffDays}日` : `Còn ${diffDays} ngày`;
 }
 
 export function getEventDurationMinutes(startTime: string, endTime: string) {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useCallback, memo, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format, isToday as dateFnsIsToday, isPast, isFuture, parseISO } from 'date-fns';
+import { ja } from 'date-fns/locale';
 import { AlertCircle, Calendar, CheckCircle2, Clock3, Sparkles, Plus } from 'lucide-react';
 import { MonthCalendar, WeekAgenda } from '@/components/calendar-view';
 import { DayEventsModal } from '@/components/day-events-modal';
@@ -152,7 +153,7 @@ export function DashboardPage() {
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
                     <p className="text-slate-300">{lang === 'ja' ? '次の目標' : 'Mục tiêu tiếp theo'}</p>
                     <p className="mt-1 text-lg font-semibold">
-                      {deadlines[0] ? getDeadlineCountdownLabel(deadlines[0].deadline?.due_datetime) : (lang === 'ja' ? 'なし' : 'Không có')}
+                      {deadlines[0] ? getDeadlineCountdownLabel(deadlines[0].deadline?.due_datetime, new Date(), lang) : (lang === 'ja' ? 'なし' : 'Không có')}
                     </p>
                   </div>
                 </div>
@@ -222,7 +223,7 @@ export function DashboardPage() {
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="font-semibold text-slate-950 dark:text-slate-50">{event.title}</h3>
-                          <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type)}</Badge>
+                          <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type, lang)}</Badge>
                         </div>
                         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{event.description || (lang === 'ja' ? '説明なし' : 'Không có mô tả')}</p>
                         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{formatTimeRange(event.start_time, event.end_time)} • {event.location || '—'}</p>
@@ -256,10 +257,10 @@ export function DashboardPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-semibold text-slate-950 dark:text-slate-50">{event.title}</p>
-                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDateShort(event.event_date)} • {formatTimeRange(event.start_time, event.end_time)}</p>
-                          <p className="mt-1 text-sm font-medium text-rose-600 dark:text-rose-400">{getDeadlineCountdownLabel(event.deadline?.due_datetime)}</p>
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDateShort(event.event_date, lang)} • {formatTimeRange(event.start_time, event.end_time)}</p>
+                          <p className="mt-1 text-sm font-medium text-rose-600 dark:text-rose-400">{getDeadlineCountdownLabel(event.deadline?.due_datetime, new Date(), lang)}</p>
                         </div>
-                        <Badge tone={getPriorityTone(event.deadline?.priority)}>{getPriorityLabel(event.deadline?.priority)}</Badge>
+                        <Badge tone={getPriorityTone(event.deadline?.priority)}>{getPriorityLabel(event.deadline?.priority, lang)}</Badge>
                       </div>
                     </div>
                   ))}
@@ -299,7 +300,7 @@ export function DashboardPage() {
                           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatTimeRange(event.start_time, event.end_time)}</p>
                         </div>
                         <div className="flex flex-col items-end gap-1.5 shrink-0">
-                          <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type)}</Badge>
+                          <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type, lang)}</Badge>
                           {status === 'ongoing' && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -576,8 +577,19 @@ export function CalendarPage() {
   const handleEventClick = useCallback((event: EventItem) => {
     const dayDate = new Date(event.event_date);
     setSelectedDay(dayDate);
+    setWeekCursor(dayDate);
     const dayEvents = (typeFilter === 'all' ? monthEvents : monthEvents.filter((e) => e.type === typeFilter))
       .filter((e) => e.event_date === event.event_date);
+    setSelectedDayEvents(dayEvents);
+    setDayEventsModalOpen(true);
+  }, [typeFilter, monthEvents]);
+
+  const handleSelectDay = useCallback((dayDate: Date) => {
+    const dayKey = format(dayDate, 'yyyy-MM-dd');
+    setSelectedDay(dayDate);
+    setWeekCursor(dayDate);
+    const dayEvents = (typeFilter === 'all' ? monthEvents : monthEvents.filter((e) => e.type === typeFilter))
+      .filter((e) => e.event_date === dayKey);
     setSelectedDayEvents(dayEvents);
     setDayEventsModalOpen(true);
   }, [typeFilter, monthEvents]);
@@ -662,7 +674,7 @@ export function CalendarPage() {
             cursor={cursor}
             setCursor={setCursor}
             events={filteredMonthEvents}
-            onSelectDay={(day) => setWeekCursor(day)}
+            onSelectDay={handleSelectDay}
             onEventClick={handleEventClick}
           />
 
@@ -682,7 +694,7 @@ export function CalendarPage() {
               <CardBody className="space-y-4">
                 <div>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? '選択した日付' : 'Ngày được chọn'}</p>
-                  <h3 className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">{format(weekCursor, 'EEEE')}</h3>
+                  <h3 className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">{format(weekCursor, 'EEEE', lang === 'ja' ? { locale: ja } : undefined)}</h3>
                   <h4 className="text-3xl font-bold text-brand-600 dark:text-brand-400">{format(weekCursor, 'dd/MM/yyyy')}</h4>
                 </div>
                 <Button variant="secondary" onClick={() => navigate('/app/events')} className="w-full">
@@ -799,7 +811,7 @@ export function EventDetailPage() {
             <CardBody className="space-y-6">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type)}</Badge>
+                  <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type, lang)}</Badge>
                   <h1 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-50">{event.title}</h1>
                   <p className="mt-3 text-slate-600 dark:text-slate-300">{event.description || (lang === 'ja' ? '説明なし' : 'Không có mô tả')}</p>
                 </div>
@@ -813,7 +825,7 @@ export function EventDetailPage() {
                 <InfoBox label={lang === 'ja' ? '時間' : 'Giờ'} value={formatTimeRange(event.start_time, event.end_time)} />
                 <InfoBox label={lang === 'ja' ? '場所' : 'Địa điểm'} value={event.location || '—'} />
                 <InfoBox label={lang === 'ja' ? 'タグ' : 'Tag'} value={event.tag_label || '—'} />
-                <InfoBox label={lang === 'ja' ? '繰り返し' : 'Lặp lại'} value={getRecurrenceLabel(event.recurrence_frequency, event.recurrence_interval || 1)} />
+                <InfoBox label={lang === 'ja' ? '繰り返し' : 'Lặp lại'} value={getRecurrenceLabel(event.recurrence_frequency, event.recurrence_interval || 1, lang)} />
               </div>
 
               {event.is_completed ? (
@@ -835,7 +847,7 @@ export function EventDetailPage() {
                         <p className="text-sm text-slate-500 dark:text-slate-400">Deadline info</p>
                         <div className="mt-1 flex items-center gap-2">
                           <span className="text-lg font-semibold text-slate-950 dark:text-slate-50">Priority:</span>
-                          <Badge tone={getPriorityTone(event.deadline.priority)}>{getPriorityLabel(event.deadline.priority)}</Badge>
+                          <Badge tone={getPriorityTone(event.deadline.priority)}>{getPriorityLabel(event.deadline.priority, lang)}</Badge>
                         </div>
                         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ステータス' : 'Trạng thái'}: {event.is_completed ? (lang === 'ja' ? '完了' : 'Hoàn thành') : (lang === 'ja' ? '待機中' : 'Đang chờ')}</p>
                       </div>
@@ -1289,7 +1301,7 @@ function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
                       </p>
                     )}
                   </div>
-                  <Badge tone={getPriorityTone(event.deadline?.priority)}>{getPriorityLabel(event.deadline?.priority)}</Badge>
+                  <Badge tone={getPriorityTone(event.deadline?.priority)}>{getPriorityLabel(event.deadline?.priority, lang)}</Badge>
                 </div>
 
                 {/* Countdown progress bar */}

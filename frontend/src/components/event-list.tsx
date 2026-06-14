@@ -219,7 +219,7 @@ export function EventTable({
                       </td>
                       <td className="px-6 py-5">
                         <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : event.type === 'holiday' ? 'success' : 'purple'}>
-                          {getTypeLabel(event.type)}
+                          {getTypeLabel(event.type, lang)}
                         </Badge>
                       </td>
                       <td className="px-6 py-5">
@@ -231,7 +231,7 @@ export function EventTable({
                       <td className="px-6 py-5">
                         {event.deadline?.priority ? (
                           <Badge tone={getPriorityTone(event.deadline.priority)}>
-                            {getPriorityLabel(event.deadline.priority)}
+                            {getPriorityLabel(event.deadline.priority, lang)}
                           </Badge>
                         ) : (
                           <span className="text-sm text-slate-400 dark:text-slate-500">—</span>
@@ -277,7 +277,7 @@ export function EventTable({
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
                   <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : event.type === 'holiday' ? 'success' : 'purple'}>
-                    {getTypeLabel(event.type)}
+                    {getTypeLabel(event.type, lang)}
                   </Badge>
                   <StatusBadge status={status} isCompleted={event.is_completed} labels={L} />
                 </div>
@@ -286,11 +286,11 @@ export function EventTable({
                   <p>{event.location || '—'}</p>
                   {event.deadline?.priority && (
                     <Badge tone={getPriorityTone(event.deadline.priority)}>
-                      {getPriorityLabel(event.deadline.priority)}
+                      {getPriorityLabel(event.deadline.priority, lang)}
                     </Badge>
                   )}
                   {event.recurrence_frequency && event.recurrence_frequency !== 'none' && (
-                    <p className="text-xs text-slate-400">{getRecurrenceLabel(event.recurrence_frequency)}</p>
+                    <p className="text-xs text-slate-400">{getRecurrenceLabel(event.recurrence_frequency, 1, lang)}</p>
                   )}
                 </div>
                 <div className="mt-4 flex gap-2">

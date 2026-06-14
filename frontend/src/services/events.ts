@@ -39,9 +39,7 @@ export async function getUpcomingNotifications(minutes = 30) {
       const start = parseLocalDateTime(event.event_date, event.start_time);
       const end = parseLocalDateTime(event.event_date, event.end_time);
       const reference = event.type === 'deadline' ? end : start;
-      const isOngoing = start <= now && end >= now;
-
-      return isOngoing || (reference >= now && reference <= horizon);
+      return start > now && reference >= now && reference <= horizon;
     })
     .sort((a, b) => {
       const aRef = parseLocalDateTime(a.event_date, a.type === 'deadline' ? a.end_time : a.start_time);
