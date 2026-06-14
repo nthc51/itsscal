@@ -397,11 +397,8 @@ export function EventFormModal({ open, mode, initialValue, onClose, onSubmit, al
 
           {/* Urgency visual indicator — only for deadline */}
           {isDeadline ? (
-            <div className="flex flex-col justify-center">
-              <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
-                {lang === 'ja' ? '紫急度のプレビュー' : 'Mức độ hiển thị'}
-              </p>
-              <div className={`flex items-center gap-3 rounded-2xl border-2 p-3 transition-all ${
+            <Field label={lang === 'ja' ? '緊急度のプレビュー' : 'Mức độ hiển thị'}>
+              <div className={`flex min-h-[58px] items-center gap-3 rounded-2xl border-2 px-4 py-3 transition-all ${
                 form.priority === 'high'
                   ? 'border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/30'
                   : form.priority === 'medium'
@@ -434,7 +431,7 @@ export function EventFormModal({ open, mode, initialValue, onClose, onSubmit, al
                   </p>
                 </div>
               </div>
-            </div>
+            </Field>
           ) : (
             <div /> 
           )}
