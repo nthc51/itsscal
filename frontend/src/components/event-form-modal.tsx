@@ -383,7 +383,7 @@ export function EventFormModal({ open, mode, initialValue, onClose, onSubmit, al
         <div className="grid gap-4 md:grid-cols-2">
           <Field label={labels.priority} error={errors.priority}>
             {isDeadline ? (
-              <Select value={form.priority || 'medium'} onChange={(e) => handleChange('priority', e.target.value as EventPriority)}>
+              <Select className="h-[78px]" value={form.priority || 'medium'} onChange={(e) => handleChange('priority', e.target.value as EventPriority)}>
                 <option value="low">{lang === 'ja' ? '🟢 低' : '🟢 Thấp'}</option>
                 <option value="medium">{lang === 'ja' ? '🟡 中' : '🟡 Trung bình'}</option>
                 <option value="high">{lang === 'ja' ? '🔴 高' : '🔴 Cao'}</option>
@@ -398,7 +398,7 @@ export function EventFormModal({ open, mode, initialValue, onClose, onSubmit, al
           {/* Urgency visual indicator — only for deadline */}
           {isDeadline ? (
             <Field label={lang === 'ja' ? '緊急度のプレビュー' : 'Mức độ hiển thị'}>
-              <div className={`flex min-h-[58px] items-center gap-3 rounded-2xl border-2 px-4 py-3 transition-all ${
+              <div className={`flex h-[78px] items-center gap-3 rounded-2xl border-2 px-4 py-3 transition-all ${
                 form.priority === 'high'
                   ? 'border-rose-300 dark:border-rose-700 bg-rose-50 dark:bg-rose-950/30'
                   : form.priority === 'medium'
