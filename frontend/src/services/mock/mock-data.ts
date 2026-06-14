@@ -446,6 +446,8 @@ export function getMockNotifications(minutes: number): EventItem[] {
   const cutoff = new Date(now.getTime() + minutes * 60 * 1000);
   return mockEvents.filter((e) => {
     const eventStart = new Date(e.event_date + 'T' + e.start_time);
-    return eventStart >= now && eventStart <= cutoff && !e.is_completed;
+    const eventEnd = new Date(e.event_date + 'T' + e.end_time);
+    const isOngoing = eventStart <= now && eventEnd >= now;
+    return (isOngoing || (eventStart >= now && eventStart <= cutoff)) && !e.is_completed;
   });
 }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Bell, CalendarRange, Clock3, LayoutDashboard, ListTodo, LogOut, Menu, Plus, UserCircle2, X } from 'lucide-react';
 import { format } from 'date-fns';
@@ -147,8 +147,16 @@ function NotificationBell() {
     return Number(localStorage.getItem('calendar_pro_notify_minutes') || '30');
   });
   const [showSettings, setShowSettings] = useState(false);
+  const sessionNotifiedOngoing = useRef(new Set<string>());
   const { t, lang } = useLang();
   const { pushToast } = useToast();
+
+  const getNotificationPhase = (event: EventItem) => {
+    const start = new Date(`${event.event_date}T${event.start_time.slice(0, 5)}:00`);
+    const end = new Date(`${event.event_date}T${event.end_time.slice(0, 5)}:00`);
+    const now = new Date();
+    return start <= now && end >= now ? 'ongoing' : 'upcoming';
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -165,10 +173,21 @@ function NotificationBell() {
           const nextSeen = new Set(seen);
 
           data.forEach((event) => {
-            const id = `${getEventId(event)}:upcoming`;
-            if (nextSeen.has(id)) return;
+            const phase = getNotificationPhase(event);
+            const id = `${getEventId(event)}:${phase}`;
 
             const timeLabel = format(new Date(event.event_date), 'dd/MM/yyyy') + ' • ' + formatTimeRange(event.start_time, event.end_time);
+
+            if (phase === 'ongoing') {
+              if (sessionNotifiedOngoing.current.has(id)) return;
+              new Notification(lang === 'ja' ? 'イベントが進行中です' : 'Sự kiện đang diễn ra', {
+                body: `${event.title} — ${timeLabel}`,
+              });
+              sessionNotifiedOngoing.current.add(id);
+              return;
+            }
+
+            if (nextSeen.has(id)) return;
             new Notification(lang === 'ja' ? 'イベントがまもなく始まります' : 'Sự kiện sắp diễn ra', {
               body: `${event.title} — ${timeLabel}`,
             });
