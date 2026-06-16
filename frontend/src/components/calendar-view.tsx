@@ -1,6 +1,7 @@
 import { format, isSameDay } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import type { KeyboardEvent } from 'react';
 import type { EventItem } from '@/types/event';
 import { buildMonthGrid, buildWeekRange, formatTimeRange, getMonthCursor, getTypeLabel, isAllDayEvent } from '@/utils/date';
 import { getEventId } from '@/utils/event-id';
@@ -66,12 +67,21 @@ export function MonthCalendar({
             const dayEvents = grouped[dayKey] || [];
             const currentMonth = day.getMonth() === cursor.getMonth();
             const today = isSameDay(day, new Date());
+            const handleSelectDay = () => onSelectDay(day);
+            const handleDayKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                handleSelectDay();
+              }
+            };
 
             return (
-              <button
+              <div
                 key={dayKey}
-                type="button"
-                onClick={() => onSelectDay(day)}
+                role="button"
+                tabIndex={0}
+                onClick={handleSelectDay}
+                onKeyDown={handleDayKeyDown}
                 className={`min-h-[90px] rounded-2xl border p-2 text-left flex flex-col transition hover:border-brand-300 hover:bg-brand-50/50 dark:hover:bg-brand-900/20 ${
                   today
                     ? 'border-brand-400 bg-brand-50 dark:bg-brand-900/20 dark:border-brand-600'
@@ -120,7 +130,7 @@ export function MonthCalendar({
                       {totalExtra > 0 && (
                         <button
                           type="button"
-                          onClick={e => { e.stopPropagation(); onSelectDay(day); }}
+                          onClick={e => { e.stopPropagation(); handleSelectDay(); }}
                           className="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:text-brand-700 hover:underline cursor-pointer"
                         >
                           +{totalExtra} {lang === 'ja' ? '件' : 'sự kiện'}
@@ -129,7 +139,7 @@ export function MonthCalendar({
                     </div>
                   );
                 })()}
-              </button>
+              </div>
             );
           })}
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Calendar, CheckCircle2, ChevronLeft, ChevronRight, Edit3, MoreHorizontal, Search, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { EventItem } from '@/types/event';
@@ -16,6 +16,14 @@ export type EventFilterMode =
 type EventStatus = 'ongoing' | 'upcoming' | 'passed' | 'completed';
 
 const PAGE_SIZE = 8;
+
+function getPaginationPages(currentPage: number, totalPages: number, maxVisible = 5) {
+  const visibleCount = Math.min(maxVisible, totalPages);
+  const maxStart = Math.max(totalPages - visibleCount + 1, 1);
+  const start = Math.min(Math.max(currentPage - Math.floor(visibleCount / 2), 1), maxStart);
+
+  return Array.from({ length: visibleCount }, (_, index) => start + index);
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function getRealtimeStatus(event: EventItem): EventStatus {
@@ -134,8 +142,13 @@ export function EventTable({
   const { lang } = useLang();
   const [page, setPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(events.length / PAGE_SIZE));
-  const safePage   = Math.min(page, totalPages);
+  const safePage   = Math.max(1, Math.min(page, totalPages));
   const pageEvents = events.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const paginationPages = useMemo(() => getPaginationPages(safePage, totalPages), [safePage, totalPages]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [events]);
 
   const L = {
     event:           lang === 'ja' ? 'イベント'   : 'Sự kiện',
@@ -321,8 +334,7 @@ export function EventTable({
               className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 transition hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-40 disabled:cursor-not-allowed">
               <ChevronLeft className="h-4 w-4" />
             </button>
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const pn = Math.min(Math.max(safePage - 2, 1) + i, totalPages);
+            {paginationPages.map((pn) => {
               return (
                 <button key={pn} type="button" onClick={() => setPage(pn)}
                   className={cn('inline-flex h-9 w-9 items-center justify-center rounded-xl text-sm font-medium transition',

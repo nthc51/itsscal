@@ -20,9 +20,9 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [isBootstrapping, setIsBootstrapping] = useState(true);
+  const [user, setUser] = useState<User | null>(() => getStoredUser());
+  const [token, setToken] = useState<string | null>(() => getStoredToken());
+  const [isBootstrapping, setIsBootstrapping] = useState(() => !(getStoredUser() && getStoredToken()));
 
   const applySession = useCallback((session: AuthSession) => {
     setUser(session.user);
