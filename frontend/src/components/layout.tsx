@@ -39,7 +39,7 @@ export function AppShell({ children, onCreateEvent }: { children: React.ReactNod
 
       {/* ── Full-width header ── */}
       <header className="sticky top-0 z-30 flex h-14 items-center border-b border-slate-200/60 dark:border-slate-700/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between">
+        <div className="flex w-full items-center justify-between">
 
           {/* LEFT — mobile menu + breadcrumb title */}
           <div className="flex items-center gap-3 min-w-0">
@@ -111,9 +111,9 @@ export function AppShell({ children, onCreateEvent }: { children: React.ReactNod
       </header>
 
       {/* ── Sidebar + Content row ── */}
-      <div className="mx-auto flex w-full max-w-[1600px] flex-1 gap-0 lg:gap-6 xl:gap-8">
+      <div className="flex w-full flex-1 gap-0 lg:gap-6 xl:gap-8">
         {/* Sticky sidebar */}
-        <aside className="hidden w-72 shrink-0 lg:block sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto p-6">
+        <aside className="hidden w-72 shrink-0 lg:block sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-6 pl-4 pr-0 xl:pl-6">
           <Sidebar onCreateEvent={onCreateEvent} onSignOut={signOut} userName={user?.full_name || 'Người dùng'} />
         </aside>
 
