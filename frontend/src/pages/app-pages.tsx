@@ -20,7 +20,7 @@ import { useDelayedLoading } from '@/hooks/use-delayed-loading';
 import { useLang } from '@/context/lang-context';
 
 
-// â”€â”€â”€ Real-time event status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Real-time event status ───────────────────────────────────────────────────
 function getRealtimeStatus(event: EventItem): 'ongoing' | 'passed' | 'upcoming' | 'completed' {
   if (event.is_completed) return 'completed';
   const now = new Date();
@@ -89,8 +89,8 @@ export function DashboardPage() {
       setTodayEvents(today);
       setDeadlines(upcoming);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'KhÃ´ng thá»ƒ táº£i dashboard');
-      pushToast({ title: 'KhÃ´ng thá»ƒ táº£i dá»¯ liá»‡u', description: err instanceof Error ? err.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+      setError(err instanceof Error ? err.message : 'Không thể tải dashboard');
+      pushToast({ title: 'Không thể tải dữ liệu', description: err instanceof Error ? err.message : 'Vui lòng thử lại', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -106,11 +106,11 @@ export function DashboardPage() {
     const timeStats = getTimeStatistics(events);
     const L = lang === 'ja';
     return [
-      { label: L ? 'åˆè¨ˆã‚¤ãƒ™ãƒ³ãƒˆ' : 'Tá»•ng sá»± kiá»‡n', value: events.length, icon: Calendar, tone: 'brand' as const },
-      { label: L ? 'ä»Šæ—¥' : 'HÃ´m nay', value: todayEvents.length, icon: Clock3, tone: 'success' as const },
-      { label: L ? 'ç· ã‚åˆ‡ã‚Š' : 'Deadline', value: deadlineCount, icon: AlertCircle, tone: 'warning' as const },
-      { label: L ? 'å®Œäº†' : 'HoÃ n thÃ nh', value: completedCount, icon: CheckCircle2, tone: 'purple' as const },
-      { label: L ? 'å­¦ç¿’æ™‚é–“' : 'Giá» há»c', value: `${timeStats.studyHours}h`, icon: Calendar, tone: 'brand' as const },
+      { label: L ? '合計イベント' : 'Tổng sự kiện', value: events.length, icon: Calendar, tone: 'brand' as const },
+      { label: L ? '今日' : 'Hôm nay', value: todayEvents.length, icon: Clock3, tone: 'success' as const },
+      { label: L ? '締め切り' : 'Deadline', value: deadlineCount, icon: AlertCircle, tone: 'warning' as const },
+      { label: L ? '完了' : 'Hoàn thành', value: completedCount, icon: CheckCircle2, tone: 'purple' as const },
+      { label: L ? '学習時間' : 'Giờ học', value: `${timeStats.studyHours}h`, icon: Calendar, tone: 'brand' as const },
     ];
   }, [events, todayEvents.length, lang]);
 
@@ -122,7 +122,7 @@ export function DashboardPage() {
   }, [todayEvents]);
 
   if (error) {
-    return <ErrorPanel title="KhÃ´ng thá»ƒ táº£i dashboard" description={error} onRetry={() => window.location.reload()} />;
+    return <ErrorPanel title="Không thể tải dashboard" description={error} onRetry={() => window.location.reload()} />;
   }
 
   return (
@@ -137,48 +137,48 @@ export function DashboardPage() {
             <div className="relative grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-end">
               <div className="space-y-4">
                 <Badge tone="brand">
-                  {lang === 'ja' ? 'æœ¬æ—¥ã®æ¦‚è¦' : 'Tá»•ng quan hÃ´m nay'}
+                  {lang === 'ja' ? '本日の概要' : 'Tổng quan hôm nay'}
                 </Badge>
                 <div>
                   <p className="text-sm text-slate-300">
-                    {lang === 'ja' ? 'ã“ã‚“ã«ã¡ã¯ã€' : 'Xin chÃ o, '}
-                    {user?.full_name || (lang === 'ja' ? 'ãƒ¦ãƒ¼ã‚¶ãƒ¼' : 'báº¡n')}ï¼
+                    {lang === 'ja' ? 'こんにちは、' : 'Xin chào, '}
+                    {user?.full_name || (lang === 'ja' ? 'ユーザー' : 'bạn')}!
                   </p>
                   <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">
                     {lang === 'ja'
-                      ? 'ã‚ãªãŸã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã¯æ˜Žç¢ºã§ã™ã€‚'
-                      : 'Lá»‹ch trÃ¬nh cá»§a báº¡n Ä‘ang ráº¥t rÃµ rÃ ng.'}
+                      ? 'あなたのスケジュールは明確です。'
+                      : 'Lịch trình của bạn đang rất rõ ràng.'}
                   </h1>
                   <p className="mt-3 max-w-2xl text-sm text-slate-300 sm:text-base">
                     {lang === 'ja'
-                      ? 'ãƒ‡ãƒƒãƒ‰ãƒ©ã‚¤ãƒ³ã€ç©ºãæ™‚é–“ã€ç¹°ã‚Šè¿”ã—ã‚¤ãƒ™ãƒ³ãƒˆã‚’ã‚¹ãƒžãƒ¼ãƒˆã«ç®¡ç†ã—ã¾ã—ã‚‡ã†ã€‚'
-                      : 'Theo dÃµi deadline, thá»i gian ráº£nh, sá»± kiá»‡n láº·p láº¡i vÃ  cÃ¡c Ä‘iá»ƒm nháº¥n trong ngÃ y báº±ng giao diá»‡n gá»n, sÃ¡ng, dá»… demo.'}
+                      ? 'デッドライン、空き時間、繰り返しイベントをスマートに管理しましょう。'
+                      : 'Theo dõi deadline, thời gian rảnh, sự kiện lặp lại và các điểm nhấn trong ngày bằng giao diện gọn, sáng, dễ demo.'}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm">
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
-                    <p className="text-slate-300">{lang === 'ja' ? 'ä»Šæ—¥' : 'HÃ´m nay'}</p>
+                    <p className="text-slate-300">{lang === 'ja' ? '今日' : 'Hôm nay'}</p>
                     <p className="mt-1 text-lg font-semibold">
-                      {todayEvents.length} {lang === 'ja' ? 'ä»¶' : 'sá»± kiá»‡n'}
+                      {todayEvents.length} {lang === 'ja' ? '件' : 'sự kiện'}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
-                    <p className="text-slate-300">{lang === 'ja' ? 'æ€¥ãŽã®ç· ã‚åˆ‡ã‚Š' : 'Deadline gáº¥p'}</p>
+                    <p className="text-slate-300">{lang === 'ja' ? '急ぎの締め切り' : 'Deadline gấp'}</p>
                     <p className="mt-1 text-lg font-semibold">
                       {todayEvents.filter((event) => event.type === 'deadline' && !event.deadline?.is_completed).length}
-                      {' '}{lang === 'ja' ? 'ä»¶' : 'viá»‡c'}
+                      {' '}{lang === 'ja' ? '件' : 'việc'}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur">
-                    <p className="text-slate-300">{lang === 'ja' ? 'æ¬¡ã®ç›®æ¨™' : 'Má»¥c tiÃªu tiáº¿p theo'}</p>
+                    <p className="text-slate-300">{lang === 'ja' ? '次の目標' : 'Mục tiêu tiếp theo'}</p>
                     <p className="mt-1 text-lg font-semibold">
-                      {deadlines[0] ? getDeadlineCountdownLabel(deadlines[0].deadline?.due_datetime, new Date(), lang) : (lang === 'ja' ? 'ãªã—' : 'KhÃ´ng cÃ³')}
+                      {deadlines[0] ? getDeadlineCountdownLabel(deadlines[0].deadline?.due_datetime, new Date(), lang) : (lang === 'ja' ? 'なし' : 'Không có')}
                     </p>
                   </div>
                 </div>
               </div>
               <div className="rounded-[28px] border border-white/10 bg-white/10 p-5 backdrop-blur-xl">
-                <p className="text-sm text-slate-300">{lang === 'ja' ? 'ä½œæ¥­ã‚»ãƒƒã‚·ãƒ§ãƒ³' : 'PhiÃªn lÃ m viá»‡c'}</p>
+                <p className="text-sm text-slate-300">{lang === 'ja' ? '作業セッション' : 'Phiên làm việc'}</p>
                 <div className="mt-3 space-y-3">
                   {stats.slice(0, 4).map((stat) => {
                     const Icon = stat.icon;
@@ -225,16 +225,16 @@ export function DashboardPage() {
             <CardBody>
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ä»Šæ—¥' : 'HÃ´m nay'}</p>
-                  <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'æ³¨ç›®ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«' : 'Lá»‹ch trÃ¬nh ná»•i báº­t'}</h2>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? '今日' : 'Hôm nay'}</p>
+                  <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? '注目のスケジュール' : 'Lịch trình nổi bật'}</h2>
                 </div>
                 <Button variant="secondary" onClick={() => navigate('/app/calendar')}>
-                  {lang === 'ja' ? 'ã‚«ãƒ¬ãƒ³ãƒ€ãƒ¼' : 'Xem lá»‹ch'}
+                  {lang === 'ja' ? 'カレンダー' : 'Xem lịch'}
                 </Button>
               </div>
 
               {todayEvents.length === 0 ? (
-                <EmptyState title={lang === 'ja' ? 'ä»Šæ—¥ã®ã‚¤ãƒ™ãƒ³ãƒˆã¯ã‚ã‚Šã¾ã›ã‚“' : 'KhÃ´ng cÃ³ sá»± kiá»‡n trong hÃ´m nay'} description={lang === 'ja' ? 'ä»Šæ—¥ã¯ä½™è£•ãŒã‚ã‚Šã¾ã™ã€‚å¿…è¦ã§ã‚ã‚Œã°ã‚¤ãƒ™ãƒ³ãƒˆã‚’è¿½åŠ ã—ã¾ã—ã‚‡ã†ã€‚' : 'HÃ´m nay khÃ¡ thoÃ¡ng, hÃ£y táº¡o thÃªm sá»± kiá»‡n náº¿u cáº§n.'} />
+                <EmptyState title={lang === 'ja' ? '今日のイベントはありません' : 'Không có sự kiện trong hôm nay'} description={lang === 'ja' ? '今日は余裕があります。必要であればイベントを追加しましょう。' : 'Hôm nay khá thoáng, hãy tạo thêm sự kiện nếu cần.'} />
               ) : (
                 <div className="space-y-3">
                   {todayEvents.map((event) => (
@@ -244,11 +244,11 @@ export function DashboardPage() {
                           <h3 className="font-semibold text-slate-950 dark:text-slate-50">{event.title}</h3>
                           <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type, lang)}</Badge>
                         </div>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{event.description || (lang === 'ja' ? 'èª¬æ˜Žãªã—' : 'KhÃ´ng cÃ³ mÃ´ táº£')}</p>
-                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{formatTimeRange(event.start_time, event.end_time)} â€¢ {event.location || 'â€”'}</p>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{event.description || (lang === 'ja' ? '説明なし' : 'Không có mô tả')}</p>
+                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{formatTimeRange(event.start_time, event.end_time)} • {event.location || '—'}</p>
                       </div>
                       <Button variant="secondary" onClick={() => navigate(`/app/events/${getEventId(event)}`)}>
-                        {lang === 'ja' ? 'è©³ç´°' : 'Chi tiáº¿t'}
+                        {lang === 'ja' ? '詳細' : 'Chi tiết'}
                       </Button>
                     </div>
                   ))}
@@ -262,13 +262,13 @@ export function DashboardPage() {
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Deadline</p>
-                  <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'è¿‘æ—¥ç· ã‚åˆ‡ã‚Š' : 'Sáº¯p Ä‘áº¿n háº¡n'}</h2>
+                  <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? '近日締め切り' : 'Sắp đến hạn'}</h2>
                 </div>
                 <Sparkles className="h-5 w-5 text-brand-500" />
               </div>
 
               {deadlines.length === 0 ? (
-                <EmptyState title={lang === 'ja' ? 'æœªå‡¦ç†ã®ç· ã‚åˆ‡ã‚Šãªã—' : 'KhÃ´ng cÃ³ deadline pending'} description={lang === 'ja' ? 'ã™ã¹ã¦ã®ç· ã‚åˆ‡ã‚ŠãŒå‡¦ç†ã•ã‚Œã¾ã—ãŸã€‚' : 'Má»i deadline hiá»‡n táº¡i Ä‘á»u Ä‘Ã£ Ä‘Æ°á»£c xá»­ lÃ½.'} />
+                <EmptyState title={lang === 'ja' ? '未処理の締め切りなし' : 'Không có deadline pending'} description={lang === 'ja' ? 'すべての締め切りが処理されました。' : 'Mọi deadline hiện tại đều đã được xử lý.'} />
               ) : (
                 <div className="space-y-3">
                   {deadlines.slice(0, 5).map((event) => (
@@ -276,7 +276,7 @@ export function DashboardPage() {
                       <div className="flex items-start justify-between gap-3">
                         <div>
                           <p className="font-semibold text-slate-950 dark:text-slate-50">{event.title}</p>
-                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDateShort(event.event_date, lang)} â€¢ {formatTimeRange(event.start_time, event.end_time)}</p>
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDateShort(event.event_date, lang)} • {formatTimeRange(event.start_time, event.end_time)}</p>
                           <p className="mt-1 text-sm font-medium text-rose-600 dark:text-rose-400">{getDeadlineCountdownLabel(event.deadline?.due_datetime, new Date(), lang)}</p>
                         </div>
                         <Badge tone={getPriorityTone(event.deadline?.priority)}>{getPriorityLabel(event.deadline?.priority, lang)}</Badge>
@@ -294,10 +294,10 @@ export function DashboardPage() {
             <CardBody className="min-w-0 space-y-4">
               <div className="min-w-0">
                 <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Today Focus</p>
-                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'ä»Šæ—¥ã®ç›®æ¨™' : 'Má»¥c tiÃªu hÃ´m nay'}</h2>
+                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? '今日の目標' : 'Mục tiêu hôm nay'}</h2>
               </div>
               {todayFocusEvents.length === 0 ? (
-                <EmptyState title={lang === 'ja' ? 'ä»Šæ—¥ã®ç›®æ¨™ãªã—' : 'ChÆ°a cÃ³ má»¥c tiÃªu hÃ´m nay'} description={lang === 'ja' ? 'ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚' : 'HÃ£y táº¡o lá»‹ch Ä‘á»ƒ há»‡ thá»‘ng Ä‘á» xuáº¥t Æ°u tiÃªn.'} />
+                <EmptyState title={lang === 'ja' ? '今日の目標なし' : 'Chưa có mục tiêu hôm nay'} description={lang === 'ja' ? 'スケジュールを追加してください。' : 'Hãy tạo lịch để hệ thống đề xuất ưu tiên.'} />
               ) : (
                 <div className="space-y-3">
                   {todayFocusEvents.map(({ event, status }) => (
@@ -323,14 +323,14 @@ export function DashboardPage() {
                           {status === 'ongoing' && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
                               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              {lang === 'ja' ? 'é€²è¡Œä¸­' : 'Äang diá»…n ra'}
+                              {lang === 'ja' ? '進行中' : 'Đang diễn ra'}
                             </span>
                           )}
                           {status === 'passed' && (
-                            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">{lang === 'ja' ? 'çµ‚äº†' : 'ÄÃ£ qua'}</span>
+                            <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500">{lang === 'ja' ? '終了' : 'Đã qua'}</span>
                           )}
                           {status === 'upcoming' && (
-                            <span className="text-[10px] font-semibold text-brand-500 dark:text-brand-400">{lang === 'ja' ? 'ã‚‚ã†ã™ãé–‹å§‹' : 'Sáº¯p báº¯t Ä‘áº§u'}</span>
+                            <span className="text-[10px] font-semibold text-brand-500 dark:text-brand-400">{lang === 'ja' ? 'もうすぐ開始' : 'Sắp bắt đầu'}</span>
                           )}
                         </div>
                       </div>
@@ -344,11 +344,11 @@ export function DashboardPage() {
           <Card>
             <CardBody className="space-y-4">
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ç©ºãæ™‚é–“ã®ææ¡ˆ' : 'Gá»£i Ã½ thá»i gian ráº£nh'}</p>
-                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'ä»Šæ—¥ã®ç©ºãæ™‚é–“' : 'Khoáº£ng trá»‘ng trong ngÃ y'}</h2>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? '空き時間の提案' : 'Gợi ý thời gian rảnh'}</p>
+                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? '今日の空き時間' : 'Khoảng trống trong ngày'}</h2>
               </div>
               {getFreeTimeSuggestions(todayEvents).length === 0 ? (
-                <EmptyState title={lang === 'ja' ? 'ååˆ†ãªç©ºãæ™‚é–“ãŒã‚ã‚Šã¾ã›ã‚“' : 'KhÃ´ng cÃ³ khoáº£ng trá»‘ng Ä‘á»§ lá»›n'} description={lang === 'ja' ? 'ä»Šæ—¥ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ã¯ã‹ãªã‚Šè©°ã¾ã£ã¦ã„ã¾ã™ã€‚' : 'Lá»‹ch hÃ´m nay khÃ¡ kÃ­n hoáº·c chá»‰ cÃ²n cÃ¡c khoáº£ng ráº¥t ngáº¯n.'} />
+                <EmptyState title={lang === 'ja' ? '十分な空き時間がありません' : 'Không có khoảng trống đủ lớn'} description={lang === 'ja' ? '今日のスケジュールはかなり詰まっています。' : 'Lịch hôm nay khá kín hoặc chỉ còn các khoảng rất ngắn.'} />
               ) : (
                 <div className="space-y-3">
                   {getFreeTimeSuggestions(todayEvents).map((slot) => (
@@ -362,14 +362,14 @@ export function DashboardPage() {
             </CardBody>
           </Card>
         </div>
-        {/* âœ¨ Feature: Weekly Summary */}
+        {/* ✨ Feature: Weekly Summary */}
         <WeeklySummaryPanel events={events} />
 
-        {/* âœ¨ Feature: Smart Deadline Alert (D-7, D-3, D-1) */}
+        {/* ✨ Feature: Smart Deadline Alert (D-7, D-3, D-1) */}
         <SmartDeadlineAlertPanel deadlines={deadlines} />
       </div>
 
-      {/* ðŸŒ Global inline create modal */}
+      {/* 🌐 Global inline create modal */}
       <EventFormModal
         open={formOpen}
         mode="create"
@@ -377,7 +377,7 @@ export function DashboardPage() {
         onClose={() => setFormOpen(false)}
         onSubmit={async (payload) => {
           await createEvent(payload);
-          pushToast({ title: 'Táº¡o sá»± kiá»‡n thÃ nh cÃ´ng', description: payload.title, variant: 'success' });
+          pushToast({ title: 'Tạo sự kiện thành công', description: payload.title, variant: 'success' });
           void loadData();
         }}
         allEvents={events}
@@ -404,7 +404,7 @@ export function EventsPage() {
       eventsPageCache = data;
       setEvents(data);
     } catch (err) {
-      pushToast({ title: 'Táº£i danh sÃ¡ch tháº¥t báº¡i', description: err instanceof Error ? err.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+      pushToast({ title: 'Tải danh sách thất bại', description: err instanceof Error ? err.message : 'Vui lòng thử lại', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -437,9 +437,9 @@ export function EventsPage() {
       if (e.is_completed) return 3;
       const start = getEventDateTime(e);
       const end = getEventEndDateTime(e);
-      if (now >= start && now <= end) return 0; // Ä‘ang diá»…n ra
-      if (start > now) return 1;                // sáº¯p tá»›i
-      return 2;                                 // Ä‘Ã£ qua / quÃ¡ háº¡n
+      if (now >= start && now <= end) return 0; // đang diễn ra
+      if (start > now) return 1;                // sắp tới
+      return 2;                                 // đã qua / quá hạn
     };
 
     return events
@@ -485,7 +485,7 @@ export function EventsPage() {
         const ga = getGroupWeight(a);
         const gb = getGroupWeight(b);
         if (ga !== gb) return ga - gb; // sort by group first
-        // Within same group: ongoing & upcoming â†’ asc by start; passed â†’ desc by date (most recent first)
+        // Within same group: ongoing & upcoming → asc by start; passed → desc by date (most recent first)
         const ta = getEventDateTime(a).getTime();
         const tb = getEventDateTime(b).getTime();
         return ga === 2 ? tb - ta : ta - tb;
@@ -495,25 +495,25 @@ export function EventsPage() {
   const handleSubmit = async (payload: EventPayload) => {
     if (editingEvent) {
       await updateEvent(getEventId(editingEvent), payload);
-      pushToast({ title: 'Cáº­p nháº­t thÃ nh cÃ´ng', description: editingEvent.title, variant: 'success' });
+      pushToast({ title: 'Cập nhật thành công', description: editingEvent.title, variant: 'success' });
     } else {
       await createEvent(payload);
-      pushToast({ title: 'Táº¡o sá»± kiá»‡n thÃ nh cÃ´ng', description: payload.title, variant: 'success' });
+      pushToast({ title: 'Tạo sự kiện thành công', description: payload.title, variant: 'success' });
     }
     setEditingEvent(null);
     await loadEvents();
   };
 
   const handleDelete = async (event: EventItem) => {
-    if (!window.confirm(`XÃ³a sá»± kiá»‡n "${event.title}"?`)) return;
+    if (!window.confirm(`Xóa sự kiện "${event.title}"?`)) return;
     await deleteEvent(getEventId(event));
-    pushToast({ title: 'ÄÃ£ xoÃ¡ sá»± kiá»‡n', description: event.title, variant: 'success' });
+    pushToast({ title: 'Đã xoá sự kiện', description: event.title, variant: 'success' });
     await loadEvents();
   };
 
   const handleComplete = async (event: EventItem) => {
     await toggleEventCompletion(getEventId(event));
-    pushToast({ title: 'ÄÃ£ cáº­p nháº­t tráº¡ng thÃ¡i', description: event.title, variant: 'success' });
+    pushToast({ title: 'Đã cập nhật trạng thái', description: event.title, variant: 'success' });
     await loadEvents();
   };
 
@@ -579,7 +579,7 @@ export function CalendarPage() {
         setMonthEvents(monthData);
         setWeekEvents(weekData);
       } catch (err) {
-        pushToast({ title: 'KhÃ´ng thá»ƒ táº£i lá»‹ch', description: err instanceof Error ? err.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+        pushToast({ title: 'Không thể tải lịch', description: err instanceof Error ? err.message : 'Vui lòng thử lại', variant: 'error' });
       } finally {
         setLoading(false);
       }
@@ -635,7 +635,7 @@ export function CalendarPage() {
       setMonthEvents(monthData);
       setWeekEvents(weekData);
     } catch (err) {
-      pushToast({ title: 'KhÃ´ng thá»ƒ táº£i lá»‹ch', description: err instanceof Error ? err.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+      pushToast({ title: 'Không thể tải lịch', description: err instanceof Error ? err.message : 'Vui lòng thử lại', variant: 'error' });
     } finally {
       setLoading(false);
     }
@@ -649,26 +649,26 @@ export function CalendarPage() {
   const handleCalendarSubmit = async (payload: EventPayload) => {
     if (editingEvent) {
       await updateEvent(getEventId(editingEvent), payload);
-      pushToast({ title: 'Cáº­p nháº­t thÃ nh cÃ´ng', description: payload.title, variant: 'success' });
+      pushToast({ title: 'Cập nhật thành công', description: payload.title, variant: 'success' });
     } else {
       await createEvent(payload);
-      pushToast({ title: 'Táº¡o sá»± kiá»‡n thÃ nh cÃ´ng', description: payload.title, variant: 'success' });
+      pushToast({ title: 'Tạo sự kiện thành công', description: payload.title, variant: 'success' });
     }
     setEditingEvent(null);
     await reloadCalendar();
   };
 
   const handleCalendarDelete = async (event: EventItem) => {
-    if (!window.confirm(`XÃ³a sá»± kiá»‡n "${event.title}"?`)) return;
+    if (!window.confirm(`Xóa sự kiện "${event.title}"?`)) return;
     await deleteEvent(getEventId(event));
-    pushToast({ title: 'ÄÃ£ xoÃ¡ sá»± kiá»‡n', description: event.title, variant: 'success' });
+    pushToast({ title: 'Đã xoá sự kiện', description: event.title, variant: 'success' });
     setDayEventsModalOpen(false);
     await reloadCalendar();
   };
 
   const handleCalendarComplete = async (event: EventItem) => {
     await toggleEventCompletion(getEventId(event));
-    pushToast({ title: 'ÄÃ£ cáº­p nháº­t tráº¡ng thÃ¡i', description: event.title, variant: 'success' });
+    pushToast({ title: 'Đã cập nhật trạng thái', description: event.title, variant: 'success' });
     await reloadCalendar();
   };
 
@@ -678,11 +678,11 @@ export function CalendarPage() {
         {/* Filter Bar */}
         <div className="flex flex-wrap items-center gap-3">
           <Button variant={typeFilter === 'all' ? 'primary' : 'secondary'} onClick={() => setTypeFilter('all')} className="flex items-center gap-2">
-            {lang === 'ja' ? 'ã™ã¹ã¦' : 'Táº¥t cáº£'} ({monthEvents.length})
+            {lang === 'ja' ? 'すべて' : 'Tất cả'} ({monthEvents.length})
           </Button>
           <Button variant={typeFilter === 'hoc' ? 'primary' : 'secondary'} onClick={() => setTypeFilter('hoc')} className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-brand-500" />
-            {lang === 'ja' ? 'å­¦ç¿’' : 'Lá»‹ch há»c'} ({monthEvents.filter((e) => e.type === 'hoc').length})
+            {lang === 'ja' ? '学習' : 'Lịch học'} ({monthEvents.filter((e) => e.type === 'hoc').length})
           </Button>
           <Button variant={typeFilter === 'deadline' ? 'primary' : 'secondary'} onClick={() => setTypeFilter('deadline')} className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-amber-500" />
@@ -690,7 +690,7 @@ export function CalendarPage() {
           </Button>
           <Button variant={typeFilter === 'lam_them' ? 'primary' : 'secondary'} onClick={() => setTypeFilter('lam_them')} className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full bg-violet-500" />
-            {lang === 'ja' ? 'ã‚¢ãƒ«ãƒã‚¤ãƒˆ' : 'LÃ m thÃªm'} ({monthEvents.filter((e) => e.type === 'lam_them').length})
+            {lang === 'ja' ? 'アルバイト' : 'Làm thêm'} ({monthEvents.filter((e) => e.type === 'lam_them').length})
           </Button>
         </div>
 
@@ -720,12 +720,12 @@ export function CalendarPage() {
             <Card className="md:col-span-2 lg:col-span-1">
               <CardBody className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'é¸æŠžã—ãŸæ—¥ä»˜' : 'NgÃ y Ä‘Æ°á»£c chá»n'}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? '選択した日付' : 'Ngày được chọn'}</p>
                   <h3 className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">{format(weekCursor, 'EEEE', lang === 'ja' ? { locale: ja } : undefined)}</h3>
                   <h4 className="text-3xl font-bold text-brand-600 dark:text-brand-400">{format(weekCursor, 'dd/MM/yyyy')}</h4>
                 </div>
                 <Button variant="secondary" onClick={() => navigate('/app/events')} className="w-full">
-                  {lang === 'ja' ? 'ãƒªã‚¹ãƒˆã‚’è¦‹ã‚‹' : 'Xem danh sÃ¡ch'}
+                  {lang === 'ja' ? 'リストを見る' : 'Xem danh sách'}
                 </Button>
               </CardBody>
             </Card>
@@ -733,10 +733,10 @@ export function CalendarPage() {
             {/* Quick Stats */}
             <Card className="md:col-span-2 lg:col-span-2">
               <CardBody className="space-y-4">
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'æ—¥åˆ¥çµ±è¨ˆ' : 'Thá»‘ng kÃª ngÃ y'}</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? '日別統計' : 'Thống kê ngày'}</p>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="rounded-2xl bg-brand-50 dark:bg-brand-900/20 p-3">
-                    <p className="text-xs text-slate-600 dark:text-slate-400">{lang === 'ja' ? 'åˆè¨ˆ' : 'Tá»•ng'}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">{lang === 'ja' ? '合計' : 'Tổng'}</p>
                     <p className="mt-2 text-2xl font-bold text-brand-600 dark:text-brand-400">{filteredWeekEvents.filter(e => e.event_date === format(weekCursor, 'yyyy-MM-dd')).length}</p>
                   </div>
                   <div className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 p-3">
@@ -744,7 +744,7 @@ export function CalendarPage() {
                     <p className="mt-2 text-2xl font-bold text-amber-600 dark:text-amber-400">{filteredWeekEvents.filter(e => e.type === 'deadline' && e.event_date === format(weekCursor, 'yyyy-MM-dd')).length}</p>
                   </div>
                   <div className="rounded-2xl bg-violet-50 dark:bg-violet-900/20 p-3">
-                    <p className="text-xs text-slate-600 dark:text-slate-400">{lang === 'ja' ? 'ã‚¢ãƒ«ãƒã‚¤ãƒˆ' : 'LÃ m thÃªm'}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">{lang === 'ja' ? 'アルバイト' : 'Làm thêm'}</p>
                     <p className="mt-2 text-2xl font-bold text-violet-600 dark:text-violet-400">{filteredWeekEvents.filter(e => e.type === 'lam_them' && e.event_date === format(weekCursor, 'yyyy-MM-dd')).length}</p>
                   </div>
                 </div>
@@ -795,7 +795,7 @@ export function EventDetailPage() {
       setLoading(true);
       setEvent(await getEventById(params.id));
     } catch (err) {
-      pushToast({ title: 'KhÃ´ng tÃ¬m tháº¥y sá»± kiá»‡n', description: err instanceof Error ? err.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+      pushToast({ title: 'Không tìm thấy sự kiện', description: err instanceof Error ? err.message : 'Vui lòng thử lại', variant: 'error' });
       navigate('/app/events');
     } finally {
       setLoading(false);
@@ -812,21 +812,21 @@ export function EventDetailPage() {
     const updated = await updateEvent(getEventId(event), payload);
     setEvent(updated);
     setEditing(false);
-    pushToast({ title: lang === 'ja' ? 'æ›´æ–°ã—ã¾ã—ãŸ' : 'Cáº­p nháº­t thÃ nh cÃ´ng', description: updated.title, variant: 'success' });
+    pushToast({ title: lang === 'ja' ? '更新しました' : 'Cập nhật thành công', description: updated.title, variant: 'success' });
   };
 
   const handleComplete = async () => {
     if (!event) return;
     const updated = await toggleEventCompletion(getEventId(event));
     setEvent(updated);
-    pushToast({ title: lang === 'ja' ? 'ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æ›´æ–°' : 'ÄÃ£ cáº­p nháº­t tráº¡ng thÃ¡i', description: updated.title, variant: 'success' });
+    pushToast({ title: lang === 'ja' ? 'ステータス更新' : 'Đã cập nhật trạng thái', description: updated.title, variant: 'success' });
   };
 
   const handleDelete = async () => {
     if (!event) return;
-    if (!window.confirm(lang === 'ja' ? `ã€Œ${event.title}ã€ã‚’å‰Šé™¤ã—ã¾ã™ã‹ï¼Ÿ` : `XÃ³a sá»± kiá»‡n "${event.title}"?`)) return;
+    if (!window.confirm(lang === 'ja' ? `「${event.title}」を削除しますか?` : `Xóa sự kiện "${event.title}"?`)) return;
     await deleteEvent(getEventId(event));
-    pushToast({ title: lang === 'ja' ? 'å‰Šé™¤ã—ã¾ã—ãŸ' : 'ÄÃ£ xoÃ¡ sá»± kiá»‡n', description: event.title, variant: 'success' });
+    pushToast({ title: lang === 'ja' ? '削除しました' : 'Đã xoá sự kiện', description: event.title, variant: 'success' });
     navigate('/app/events');
   };
 
@@ -840,24 +840,24 @@ export function EventDetailPage() {
                 <div>
                   <Badge tone={event.type === 'deadline' ? 'warning' : event.type === 'hoc' ? 'brand' : 'purple'}>{getTypeLabel(event.type, lang)}</Badge>
                   <h1 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-50">{event.title}</h1>
-                  <p className="mt-3 text-slate-600 dark:text-slate-300">{event.description || (lang === 'ja' ? 'èª¬æ˜Žãªã—' : 'KhÃ´ng cÃ³ mÃ´ táº£')}</p>
+                  <p className="mt-3 text-slate-600 dark:text-slate-300">{event.description || (lang === 'ja' ? '説明なし' : 'Không có mô tả')}</p>
                 </div>
                 <Button variant="secondary" onClick={() => setEditing(true)}>
-                  {lang === 'ja' ? 'ç·¨é›†' : 'Chá»‰nh sá»­a'}
+                  {lang === 'ja' ? '編集' : 'Chỉnh sửa'}
                 </Button>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <InfoBox label={lang === 'ja' ? 'æ—¥ä»˜' : 'NgÃ y'} value={format(new Date(event.event_date), 'dd/MM/yyyy')} />
-                <InfoBox label={lang === 'ja' ? 'æ™‚é–“' : 'Giá»'} value={formatTimeRange(event.start_time, event.end_time)} />
-                <InfoBox label={lang === 'ja' ? 'å ´æ‰€' : 'Äá»‹a Ä‘iá»ƒm'} value={event.location || 'â€”'} />
-                <InfoBox label={lang === 'ja' ? 'ã‚¿ã‚°' : 'Tag'} value={event.tag_label || 'â€”'} />
-                <InfoBox label={lang === 'ja' ? 'ç¹°ã‚Šè¿”ã—' : 'Láº·p láº¡i'} value={getRecurrenceLabel(event.recurrence_frequency, event.recurrence_interval || 1, lang)} />
+                <InfoBox label={lang === 'ja' ? '日付' : 'Ngày'} value={format(new Date(event.event_date), 'dd/MM/yyyy')} />
+                <InfoBox label={lang === 'ja' ? '時間' : 'Giờ'} value={formatTimeRange(event.start_time, event.end_time)} />
+                <InfoBox label={lang === 'ja' ? '場所' : 'Địa điểm'} value={event.location || '—'} />
+                <InfoBox label={lang === 'ja' ? 'タグ' : 'Tag'} value={event.tag_label || '—'} />
+                <InfoBox label={lang === 'ja' ? '繰り返し' : 'Lặp lại'} value={getRecurrenceLabel(event.recurrence_frequency, event.recurrence_interval || 1, lang)} />
               </div>
 
               {event.is_completed ? (
                 <div className="rounded-3xl border-2 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/30 p-4">
-                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{lang === 'ja' ? 'å®Œäº†æ¸ˆã¿' : 'ÄÃ£ hoÃ n thÃ nh'}</p>
+                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">{lang === 'ja' ? '完了済み' : 'Đã hoàn thành'}</p>
                   {event.completed_at && (
                     <p className="mt-1 text-xs text-emerald-600 dark:text-emerald-500">
                       {format(new Date(event.completed_at), 'HH:mm - dd/MM/yyyy')}
@@ -876,18 +876,18 @@ export function EventDetailPage() {
                           <span className="text-lg font-semibold text-slate-950 dark:text-slate-50">Priority:</span>
                           <Badge tone={getPriorityTone(event.deadline.priority)}>{getPriorityLabel(event.deadline.priority, lang)}</Badge>
                         </div>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹' : 'Tráº¡ng thÃ¡i'}: {event.is_completed ? (lang === 'ja' ? 'å®Œäº†' : 'HoÃ n thÃ nh') : (lang === 'ja' ? 'å¾…æ©Ÿä¸­' : 'Äang chá»')}</p>
+                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ステータス' : 'Trạng thái'}: {event.is_completed ? (lang === 'ja' ? '完了' : 'Hoàn thành') : (lang === 'ja' ? '待機中' : 'Đang chờ')}</p>
                       </div>
                       <div className="flex gap-2">
                         {!event.is_completed ? (
                           <Button onClick={handleComplete}>
                             <CheckCircle2 className="h-4 w-4" />
-                            {lang === 'ja' ? 'å®Œäº†ã«ã™ã‚‹' : 'HoÃ n thÃ nh'}
+                            {lang === 'ja' ? '完了にする' : 'Hoàn thành'}
                           </Button>
                         ) : null}
                         <Button variant="secondary" onClick={() => navigate('/app/calendar')}>
                           <Calendar className="h-4 w-4" />
-                          {lang === 'ja' ? 'ã‚«ãƒ¬ãƒ³ãƒ€ãƒ¼' : 'Lá»‹ch'}
+                          {lang === 'ja' ? 'カレンダー' : 'Lịch'}
                         </Button>
                       </div>
                     </div>
@@ -896,8 +896,8 @@ export function EventDetailPage() {
               ) : null}
 
               <div className="flex flex-wrap gap-3">
-                <Button variant="danger" onClick={handleDelete}>{lang === 'ja' ? 'å‰Šé™¤' : 'XoÃ¡'}</Button>
-                <Button variant="secondary" onClick={() => navigate('/app/events')}>{lang === 'ja' ? 'æˆ»ã‚‹' : 'Quay láº¡i'}</Button>
+                <Button variant="danger" onClick={handleDelete}>{lang === 'ja' ? '削除' : 'Xoá'}</Button>
+                <Button variant="secondary" onClick={() => navigate('/app/events')}>{lang === 'ja' ? '戻る' : 'Quay lại'}</Button>
               </div>
             </CardBody>
           </Card>
@@ -908,10 +908,10 @@ export function EventDetailPage() {
               <div className="rounded-3xl bg-gradient-to-br from-slate-950 to-slate-800 p-6 text-white shadow-2xl">
                 <p className="text-xs uppercase tracking-[0.24em] text-slate-400">{format(new Date(event.event_date), 'EEE, dd MMM')}</p>
                 <h2 className="mt-3 text-2xl font-semibold">{event.title}</h2>
-                <p className="mt-3 text-sm text-slate-300">{event.description || (lang === 'ja' ? 'èª¬æ˜Žãªã—' : 'KhÃ´ng cÃ³ mÃ´ táº£')}</p>
+                <p className="mt-3 text-sm text-slate-300">{event.description || (lang === 'ja' ? '説明なし' : 'Không có mô tả')}</p>
                 <div className="mt-5 space-y-2 text-sm text-slate-300">
                   <p>{formatTimeRange(event.start_time, event.end_time)}</p>
-                  <p>{event.location || 'â€”'}</p>
+                  <p>{event.location || '—'}</p>
                 </div>
               </div>
             </CardBody>
@@ -935,7 +935,7 @@ export function EventDetailPage() {
         onClose={() => setFormOpen(false)}
         onSubmit={async (payload) => {
           await createEvent(payload);
-          pushToast({ title: lang === 'ja' ? 'ã‚¤ãƒ™ãƒ³ãƒˆã‚’ä½œæˆã—ã¾ã—ãŸ' : 'Táº¡o sá»± kiá»‡n thÃ nh cÃ´ng', description: payload.title, variant: 'success' });
+          pushToast({ title: lang === 'ja' ? 'イベントを作成しました' : 'Tạo sự kiện thành công', description: payload.title, variant: 'success' });
           setFormOpen(false);
         }}
       />
@@ -966,9 +966,9 @@ export function ProfilePage() {
     try {
       setSavingProfile(true);
       await updateProfile({ full_name: profileForm.full_name.trim(), email: profileForm.email.trim() });
-      pushToast({ title: 'ÄÃ£ cáº­p nháº­t há»“ sÆ¡', description: 'ThÃ´ng tin cÃ¡ nhÃ¢n Ä‘Ã£ Ä‘Æ°á»£c lÆ°u.', variant: 'success' });
+      pushToast({ title: 'Đã cập nhật hồ sơ', description: 'Thông tin cá nhân đã được lưu.', variant: 'success' });
     } catch (error) {
-      pushToast({ title: 'Cáº­p nháº­t tháº¥t báº¡i', description: error instanceof Error ? error.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+      pushToast({ title: 'Cập nhật thất bại', description: error instanceof Error ? error.message : 'Vui lòng thử lại', variant: 'error' });
     } finally {
       setSavingProfile(false);
     }
@@ -977,7 +977,7 @@ export function ProfilePage() {
   const handlePasswordSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (passwordForm.new_password !== passwordForm.confirm_password) {
-      pushToast({ title: 'Máº­t kháº©u khÃ´ng khá»›p', description: 'Vui lÃ²ng kiá»ƒm tra láº¡i máº­t kháº©u má»›i.', variant: 'error' });
+      pushToast({ title: 'Mật khẩu không khớp', description: 'Vui lòng kiểm tra lại mật khẩu mới.', variant: 'error' });
       return;
     }
 
@@ -985,9 +985,9 @@ export function ProfilePage() {
       setSavingPassword(true);
       await changePassword({ current_password: passwordForm.current_password, new_password: passwordForm.new_password });
       setPasswordForm({ current_password: '', new_password: '', confirm_password: '' });
-      pushToast({ title: 'ÄÃ£ Ä‘á»•i máº­t kháº©u', description: 'Máº­t kháº©u má»›i Ä‘Ã£ Ä‘Æ°á»£c lÆ°u.', variant: 'success' });
+      pushToast({ title: 'Đã đổi mật khẩu', description: 'Mật khẩu mới đã được lưu.', variant: 'success' });
     } catch (error) {
-      pushToast({ title: 'Äá»•i máº­t kháº©u tháº¥t báº¡i', description: error instanceof Error ? error.message : 'Vui lÃ²ng thá»­ láº¡i', variant: 'error' });
+      pushToast({ title: 'Đổi mật khẩu thất bại', description: error instanceof Error ? error.message : 'Vui lòng thử lại', variant: 'error' });
     } finally {
       setSavingPassword(false);
     }
@@ -996,26 +996,26 @@ export function ProfilePage() {
   return (
     <>
       <PageShell
-        title={lang === 'ja' ? 'ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«' : 'Há»“ sÆ¡ cÃ¡ nhÃ¢n'}
-        description={lang === 'ja' ? 'ã‚¢ã‚«ã‚¦ãƒ³ãƒˆæƒ…å ±ã®æ›´æ–°ã¨ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰å¤‰æ›´ã¯ã“ã¡ã‚‰ã§è¡Œãˆã¾ã™ã€‚' : 'Cáº­p nháº­t thÃ´ng tin tÃ i khoáº£n vÃ  thay Ä‘á»•i máº­t kháº©u táº¡i Ä‘Ã¢y.'}
+        title={lang === 'ja' ? 'プロフィール' : 'Hồ sơ cá nhân'}
+        description={lang === 'ja' ? 'アカウント情報の更新とパスワード変更はこちらで行えます。' : 'Cập nhật thông tin tài khoản và thay đổi mật khẩu tại đây.'}
       >
         <div className="grid gap-6 xl:grid-cols-[1fr_0.95fr]">
           <Card>
             <CardBody className="space-y-6">
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'å€‹äººæƒ…å ±' : 'ThÃ´ng tin cÃ¡ nhÃ¢n'}</p>
-                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'ãƒ—ãƒ­ãƒ•ã‚£ãƒ¼ãƒ«ç·¨é›†' : 'Chá»‰nh sá»­a há»“ sÆ¡'}</h2>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? '個人情報' : 'Thông tin cá nhân'}</p>
+                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'プロフィール編集' : 'Chỉnh sửa hồ sơ'}</h2>
               </div>
 
               <form className="space-y-4" onSubmit={handleProfileSubmit}>
-                <Field label={lang === 'ja' ? 'æ°å' : 'Há» vÃ  tÃªn'}>
+                <Field label={lang === 'ja' ? '氏名' : 'Họ và tên'}>
                   <Input value={profileForm.full_name} onChange={(e) => setProfileForm((current) => ({ ...current, full_name: e.target.value }))} />
                 </Field>
                 <Field label="Email">
                   <Input type="email" value={profileForm.email} onChange={(e) => setProfileForm((current) => ({ ...current, email: e.target.value }))} />
                 </Field>
 
-                <Button type="submit" isLoading={savingProfile}>{lang === 'ja' ? 'å¤‰æ›´ã‚’ä¿å­˜' : 'LÆ°u thay Ä‘á»•i'}</Button>
+                <Button type="submit" isLoading={savingProfile}>{lang === 'ja' ? '変更を保存' : 'Lưu thay đổi'}</Button>
               </form>
             </CardBody>
           </Card>
@@ -1023,22 +1023,22 @@ export function ProfilePage() {
           <Card>
             <CardBody className="space-y-6">
               <div>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ã‚»ã‚­ãƒ¥ãƒªãƒ†ã‚£' : 'Báº£o máº­t'}</p>
-                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰å¤‰æ›´' : 'Äá»•i máº­t kháº©u'}</h2>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'セキュリティ' : 'Bảo mật'}</p>
+                <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'パスワード変更' : 'Đổi mật khẩu'}</h2>
               </div>
 
               <form className="space-y-4" onSubmit={handlePasswordSubmit}>
-                <Field label={lang === 'ja' ? 'ç¾åœ¨ã®ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰' : 'Máº­t kháº©u hiá»‡n táº¡i'}>
+                <Field label={lang === 'ja' ? '現在のパスワード' : 'Mật khẩu hiện tại'}>
                   <Input type="password" value={passwordForm.current_password} onChange={(e) => setPasswordForm((current) => ({ ...current, current_password: e.target.value }))} />
                 </Field>
-                <Field label={lang === 'ja' ? 'æ–°ã—ã„ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰' : 'Máº­t kháº©u má»›i'}>
+                <Field label={lang === 'ja' ? '新しいパスワード' : 'Mật khẩu mới'}>
                   <Input type="password" value={passwordForm.new_password} onChange={(e) => setPasswordForm((current) => ({ ...current, new_password: e.target.value }))} />
                 </Field>
-                <Field label={lang === 'ja' ? 'æ–°ã—ã„ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰ï¼ˆç¢ºèªï¼‰' : 'Nháº­p láº¡i máº­t kháº©u má»›i'}>
+                <Field label={lang === 'ja' ? '新しいパスワード(確認)' : 'Nhập lại mật khẩu mới'}>
                   <Input type="password" value={passwordForm.confirm_password} onChange={(e) => setPasswordForm((current) => ({ ...current, confirm_password: e.target.value }))} />
                 </Field>
 
-                <Button type="submit" variant="secondary" isLoading={savingPassword}>{lang === 'ja' ? 'ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰å¤‰æ›´' : 'Äá»•i máº­t kháº©u'}</Button>
+                <Button type="submit" variant="secondary" isLoading={savingPassword}>{lang === 'ja' ? 'パスワード変更' : 'Đổi mật khẩu'}</Button>
               </form>
             </CardBody>
           </Card>
@@ -1048,11 +1048,11 @@ export function ProfilePage() {
           <CardBody>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{lang === 'ja' ? 'ä½¿ç”¨ä¸­ã®ã‚¢ã‚«ã‚¦ãƒ³ãƒˆ' : 'TÃ i khoáº£n Ä‘ang dÃ¹ng'}</p>
-                <h3 className="text-xl font-semibold text-slate-950 dark:text-slate-50">{user?.full_name || 'â€”'}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{lang === 'ja' ? '使用中のアカウント' : 'Tài khoản đang dùng'}</p>
+                <h3 className="text-xl font-semibold text-slate-950 dark:text-slate-50">{user?.full_name || '—'}</h3>
               </div>
               <div className="rounded-2xl bg-slate-50 dark:bg-slate-700 px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
-                {user?.email || 'â€”'}
+                {user?.email || '—'}
               </div>
             </div>
           </CardBody>
@@ -1067,7 +1067,7 @@ export function ProfilePage() {
         onClose={() => setProfileFormOpen(false)}
         onSubmit={async (payload) => {
           await createEvent(payload);
-          pushToast({ title: 'Táº¡o sá»± kiá»‡n thÃ nh cÃ´ng', description: payload.title, variant: 'success' });
+          pushToast({ title: 'Tạo sự kiện thành công', description: payload.title, variant: 'success' });
           setProfileFormOpen(false);
         }}
       />
@@ -1080,9 +1080,9 @@ export function NotFoundPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
       <div className="max-w-xl text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-slate-400">404</p>
-        <h1 className="mt-4 text-4xl font-semibold">KhÃ´ng tÃ¬m tháº¥y trang</h1>
-        <p className="mt-3 text-slate-300">ÄÆ°á»ng dáº«n nÃ y khÃ´ng tá»“n táº¡i hoáº·c Ä‘Ã£ bá»‹ chuyá»ƒn hÆ°á»›ng.</p>
-        <a href="/app" className="mt-8 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100">Vá» dashboard</a>
+        <h1 className="mt-4 text-4xl font-semibold">Không tìm thấy trang</h1>
+        <p className="mt-3 text-slate-300">Đường dẫn này không tồn tại hoặc đã bị chuyển hướng.</p>
+        <a href="/app" className="mt-8 inline-flex rounded-2xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-slate-100">Về dashboard</a>
       </div>
     </div>
   );
@@ -1124,7 +1124,7 @@ function ErrorPanel({ title, description, onRetry }: { title: string; descriptio
           </div>
           <h2 className="mt-4 text-2xl font-semibold text-slate-950 dark:text-slate-50">{title}</h2>
           <p className="mt-2 text-slate-500 dark:text-slate-400">{description}</p>
-          <Button className="mt-6" onClick={onRetry}>Táº£i láº¡i</Button>
+          <Button className="mt-6" onClick={onRetry}>Tải lại</Button>
         </CardBody>
       </Card>
     </div>
@@ -1146,7 +1146,7 @@ function buildWeekEnd(date: Date) {
   return end;
 }
 
-// â”€â”€â”€ âœ¨ Feature #15a: AI Weekly Summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── ✨ Feature #15a: AI Weekly Summary ──────────────────────────────────────
 function WeeklySummaryPanel({ events }: { events: EventItem[] }) {
   const { lang } = useLang();
   const summary = useMemo(() => {
@@ -1177,25 +1177,25 @@ function WeeklySummaryPanel({ events }: { events: EventItem[] }) {
 
   const insight = lang === 'ja'
     ? summary.completionRate >= 80
-      ? 'ðŸ”¥ ç´ æ™´ã‚‰ã—ã„é€±ã§ã™ï¼å®Œäº†çŽ‡ãŒã¨ã¦ã‚‚é«˜ã„ã§ã™ã€‚'
+      ? '🔥 素晴らしい週です!完了率がとても高いです。'
       : summary.completionRate >= 50
-      ? 'ðŸ‘ å®‰å®šã—ãŸé€±ã§ã™ã€‚ã“ã®ãƒšãƒ¼ã‚¹ã‚’ç¶­æŒã—ã¾ã—ã‚‡ã†ï¼'
+      ? '👍 安定した週です。このペースを維持しましょう!'
       : summary.total === 0
-      ? 'ðŸ“‹ ä»Šé€±ã®ã‚¹ã‚±ã‚¸ãƒ¥ãƒ¼ãƒ«ãŒã¾ã ã‚ã‚Šã¾ã›ã‚“ã€‚è¨ˆç”»ã‚’ç«‹ã¦ã¾ã—ã‚‡ã†ï¼'
-      : 'âš ï¸ å®Œäº†çŽ‡ãŒä½Žã‚ã§ã™ã€‚å„ªå…ˆåº¦ã‚’è¦‹ç›´ã—ã¾ã—ã‚‡ã†ã€‚'
+      ? '📋 今週のスケジュールがまだありません。計画を立てましょう!'
+      : '⚠️ 完了率が低めです。優先度を見直しましょう。'
     : summary.completionRate >= 80
-      ? 'ðŸ”¥ Tuáº§n xuáº¥t sáº¯c! Tá»· lá»‡ hoÃ n thÃ nh ráº¥t cao.'
+      ? '🔥 Tuần xuất sắc! Tỷ lệ hoàn thành rất cao.'
       : summary.completionRate >= 50
-      ? 'ðŸ‘ Tuáº§n á»•n Ä‘á»‹nh. HÃ£y duy trÃ¬ phong Ä‘á»™!'
+      ? '👍 Tuần ổn định. Hãy duy trì phong độ!'
       : summary.total === 0
-      ? 'ðŸ“‹ ChÆ°a cÃ³ lá»‹ch tuáº§n nÃ y. HÃ£y lÃªn káº¿ hoáº¡ch!'
-      : 'âš ï¸ Tá»· lá»‡ hoÃ n thÃ nh tháº¥p. Xem láº¡i má»©c Ä‘á»™ Æ°u tiÃªn.';
+      ? '📋 Chưa có lịch tuần này. Hãy lên kế hoạch!'
+      : '⚠️ Tỷ lệ hoàn thành thấp. Xem lại mức độ ưu tiên.';
 
   const statItems = [
-    { label: lang === 'ja' ? 'å­¦ç¿’æ™‚é–“' : 'Giá» há»c', value: summary.studyMins > 0 ? summary.toH(summary.studyMins) : '0h', color: 'bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400' },
-    { label: lang === 'ja' ? 'ã‚¢ãƒ«ãƒã‚¤ãƒˆæ™‚é–“' : 'Giá» lÃ m thÃªm', value: summary.workMins > 0 ? summary.toH(summary.workMins) : '0h', color: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400' },
-    { label: 'Deadline', value: `${summary.deadlineCount} ${lang === 'ja' ? 'ä»¶' : 'viá»‡c'}`, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
-    { label: lang === 'ja' ? 'å®Œäº†' : 'HoÃ n thÃ nh', value: `${summary.completionRate}%`, color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' },
+    { label: lang === 'ja' ? '学習時間' : 'Giờ học', value: summary.studyMins > 0 ? summary.toH(summary.studyMins) : '0h', color: 'bg-brand-50 dark:bg-brand-900/20 text-brand-700 dark:text-brand-400' },
+    { label: lang === 'ja' ? 'アルバイト時間' : 'Giờ làm thêm', value: summary.workMins > 0 ? summary.toH(summary.workMins) : '0h', color: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400' },
+    { label: 'Deadline', value: `${summary.deadlineCount} ${lang === 'ja' ? '件' : 'việc'}`, color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
+    { label: lang === 'ja' ? '完了' : 'Hoàn thành', value: `${summary.completionRate}%`, color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' },
   ];
 
   return (
@@ -1203,7 +1203,7 @@ function WeeklySummaryPanel({ events }: { events: EventItem[] }) {
       <CardBody>
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? 'ä»Šé€±ã®ã¾ã¨ã‚' : 'Tá»•ng káº¿t tuáº§n nÃ y'}</h2>
+            <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">{lang === 'ja' ? '今週のまとめ' : 'Tổng kết tuần này'}</h2>
           </div>
           <span className="rounded-2xl bg-brand-50 dark:bg-brand-900/30 px-3 py-1.5 text-sm font-semibold text-brand-700 dark:text-brand-400">AI Weekly Summary</span>
         </div>
@@ -1225,8 +1225,8 @@ function WeeklySummaryPanel({ events }: { events: EventItem[] }) {
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 mb-1.5">
             <span>
               {lang === 'ja'
-                ? `å®Œäº†çŽ‡ (${summary.completedCount}/${summary.total} ä»¶)`
-                : `Tá»· lá»‡ hoÃ n thÃ nh (${summary.completedCount}/${summary.total} sá»± kiá»‡n)`}
+                ? `完了率 (${summary.completedCount}/${summary.total} 件)`
+                : `Tỷ lệ hoàn thành (${summary.completedCount}/${summary.total} sự kiện)`}
             </span>
             <span className="font-semibold">{summary.completionRate}%</span>
           </div>
@@ -1242,7 +1242,7 @@ function WeeklySummaryPanel({ events }: { events: EventItem[] }) {
   );
 }
 
-// â”€â”€â”€ âœ¨ Feature #15b: Smart Deadline Alert (D-7, D-3, D-1) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── ✨ Feature #15b: Smart Deadline Alert (D-7, D-3, D-1) ───────────────────
 function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
   const { lang } = useLang();
   const alerts = useMemo(() => {
@@ -1265,11 +1265,11 @@ function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
   }, [deadlines]);
 
   const getBadge = (diffDays: number) => {
-    if (diffDays <= 0) return lang === 'ja' ? 'ðŸ”´ æœŸé™åˆ‡ã‚Œï¼' : 'ðŸ”´ QuÃ¡ háº¡n!';
-    if (diffDays === 1) return 'ðŸ”´ D-1';
-    if (diffDays <= 3) return `ðŸŸ  D-${diffDays}`;
-    if (diffDays <= 7) return `ðŸŸ¡ D-${diffDays}`;
-    return `ðŸŸ¢ D-${diffDays}`;
+    if (diffDays <= 0) return lang === 'ja' ? '🔴 期限切れ!' : '🔴 Quá hạn!';
+    if (diffDays === 1) return '🔴 D-1';
+    if (diffDays <= 3) return `🟠 D-${diffDays}`;
+    if (diffDays <= 7) return `🟡 D-${diffDays}`;
+    return `🟢 D-${diffDays}`;
   };
 
   const urgencyStyle: Record<string, string> = {
@@ -1287,14 +1287,14 @@ function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
             <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">Smart Deadline Alert</h2>
           </div>
           <span className="rounded-2xl bg-rose-50 dark:bg-rose-900/20 px-3 py-1.5 text-sm font-semibold text-rose-700 dark:text-rose-400">
-            {lang === 'ja' ? 'D-7 â†’ D-1 â†’ æœŸé™åˆ‡ã‚Œ' : 'D-7 â†’ D-1 â†’ QuÃ¡ háº¡n'}
+            {lang === 'ja' ? 'D-7 → D-1 → 期限切れ' : 'D-7 → D-1 → Quá hạn'}
           </span>
         </div>
 
         {alerts.length === 0 ? (
           <EmptyState
-            title={lang === 'ja' ? 'è­¦å‘ŠãŒå¿…è¦ãªç· ã‚åˆ‡ã‚Šã¯ã‚ã‚Šã¾ã›ã‚“' : 'KhÃ´ng cÃ³ deadline nÃ o cáº§n cáº£nh bÃ¡o'}
-            description={lang === 'ja' ? 'ã™ã¹ã¦ã®ç· ã‚åˆ‡ã‚Šã¯ã¾ã ä½™è£•ãŒã‚ã‚‹ã‹ã€å®Œäº†æ¸ˆã¿ã§ã™ã€‚' : 'Táº¥t cáº£ deadline Ä‘á»u cÃ²n nhiá»u thá»i gian hoáº·c Ä‘Ã£ hoÃ n thÃ nh.'}
+            title={lang === 'ja' ? '警告が必要な締め切りはありません' : 'Không có deadline nào cần cảnh báo'}
+            description={lang === 'ja' ? 'すべての締め切りはまだ余裕があるか、完了済みです。' : 'Tất cả deadline đều còn nhiều thời gian hoặc đã hoàn thành.'}
           />
         ) : (
           <div className="space-y-3">
@@ -1308,21 +1308,21 @@ function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
                     </div>
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                       {event.deadline?.due_datetime
-                        ? format(new Date(event.deadline.due_datetime), 'HH:mm â€“ dd/MM/yyyy')
-                        : (lang === 'ja' ? 'ä¸æ˜Ž' : 'KhÃ´ng xÃ¡c Ä‘á»‹nh')}
+                        ? format(new Date(event.deadline.due_datetime), 'HH:mm – dd/MM/yyyy')
+                        : (lang === 'ja' ? '不明' : 'Không xác định')}
                     </p>
                     {diffDays <= 3 && diffDays > 0 && (
                       <p className="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">
                         {lang === 'ja'
-                          ? `âš¡ ã‚ã¨${diffDays}æ—¥ï¼ä»Šã™ãå„ªå…ˆçš„ã«å–ã‚Šçµ„ã¿ã¾ã—ã‚‡ã†ã€‚`
-                          : `âš¡ CÃ²n ${diffDays} ngÃ y! HÃ£y Æ°u tiÃªn hoÃ n thÃ nh ngay.`}
+                          ? `⚡ あと${diffDays}日!今すぐ優先的に取り組みましょう。`
+                          : `⚡ Còn ${diffDays} ngày! Hãy ưu tiên hoàn thành ngay.`}
                       </p>
                     )}
                     {diffDays <= 0 && (
                       <p className="mt-1 text-xs font-bold text-rose-700 dark:text-rose-400">
                         {lang === 'ja'
-                          ? 'â— æœŸé™ã‚’éŽãŽã¦ã„ã¾ã™ï¼å¿…è¦ã§ã‚ã‚Œã°æ‹…å½“è€…ã«é€£çµ¡ã—ã¦ãã ã•ã„ã€‚'
-                          : 'â— ÄÃ£ quÃ¡ háº¡n! LiÃªn há»‡ giáº£ng viÃªn ngay náº¿u cáº§n.'}
+                          ? '❗ 期限を過ぎています!必要であれば担当者に連絡してください。'
+                          : '❗ Đã quá hạn! Liên hệ giảng viên ngay nếu cần.'}
                       </p>
                     )}
                   </div>
@@ -1339,7 +1339,7 @@ function SmartDeadlineAlertPanel({ deadlines }: { deadlines: EventItem[] }) {
                       />
                     </div>
                     <p className="mt-1 text-right text-[10px] text-slate-500 dark:text-slate-400">
-                      {lang === 'ja' ? `${diffDays}/7æ—¥æ®‹ã‚Š` : `${diffDays}/7 ngÃ y cÃ²n láº¡i`}
+                      {lang === 'ja' ? `${diffDays}/7日残り` : `${diffDays}/7 ngày còn lại`}
                     </p>
                   </div>
                 )}

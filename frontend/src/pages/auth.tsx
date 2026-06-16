@@ -48,7 +48,12 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         navigate('/login');
       }
     } catch (error) {
-      pushToast({ title: 'Thao tác thất bại', description: error instanceof Error ? error.message : 'Vui lòng thử lại', variant: 'error' });
+      const message = error instanceof Error ? error.message : 'Vui lòng thử lại';
+      pushToast({
+        title: mode === 'login' ? 'Đăng nhập thất bại' : 'Thao tác thất bại',
+        description: message.includes('Email') || message.includes('không tồn tại') || message.includes('chưa tồn tại') ? 'Tài khoản chưa tồn tại' : message,
+        variant: 'error',
+      });
     } finally {
       setLoading(false);
     }
